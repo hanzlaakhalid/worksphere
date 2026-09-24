@@ -1,0 +1,10 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Domain models are added incrementally per phase, starting with
+// User/Role in Phase 2 (Authentication & Authorization).
