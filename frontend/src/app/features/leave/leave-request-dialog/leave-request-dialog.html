@@ -1,0 +1,70 @@
+<app-modal title="Request Leave">
+  <form [formGroup]="form" (ngSubmit)="submit()" class="leave-form">
+    @if (error()) {
+      <div class="form-error" role="alert">{{ error() }}</div>
+    }
+
+    <mat-form-field appearance="outline">
+      <mat-label>Leave type</mat-label>
+      <mat-select formControlName="leaveType">
+        @for (type of leaveTypes; track type) {
+          <mat-option [value]="type">{{ type.charAt(0) + type.slice(1).toLowerCase() }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <div class="field-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Start date</mat-label>
+        <input matInput [matDatepicker]="startPicker" formControlName="startDate" />
+        <mat-datepicker-toggle matSuffix [for]="startPicker" />
+        <mat-datepicker #startPicker />
+        @if (form.controls.startDate.hasError('required') && form.controls.startDate.touched) {
+          <mat-error>Start date is required</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>End date</mat-label>
+        <input matInput [matDatepicker]="endPicker" formControlName="endDate" />
+        <mat-datepicker-toggle matSuffix [for]="endPicker" />
+        <mat-datepicker #endPicker />
+        @if (form.controls.endDate.hasError('required') && form.controls.endDate.touched) {
+          <mat-error>End date is required</mat-error>
+        }
+        @if (form.controls.endDate.hasError('endBeforeStart') && form.controls.endDate.touched) {
+          <mat-error>End date can't be before the start date</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Reason</mat-label>
+      <textarea matInput formControlName="reason" rows="3"></textarea>
+      @if (form.controls.reason.hasError('required') && form.controls.reason.touched) {
+        <mat-error>Please provide a reason</mat-error>
+      }
+      @if (form.controls.reason.hasError('minlength') && form.controls.reason.touched) {
+        <mat-error>Please provide a bit more detail (at least 5 characters)</mat-error>
+      }
+    </mat-form-field>
+
+    <app-file-upload
+      label="Attach supporting document"
+      accept="image/png,image/jpeg,image/webp,application/pdf"
+      [currentUrl]="form.controls.attachmentUrl.value"
+      (uploaded)="onAttachmentUploaded($event)"
+    />
+  </form>
+
+  <div modalActions>
+    <button mat-button type="button" mat-dialog-close>Cancel</button>
+    <button mat-flat-button color="primary" type="button" [disabled]="saving()" (click)="submit()">
+      @if (saving()) {
+        <mat-spinner diameter="20" />
+      } @else {
+        Submit Request
+      }
+    </button>
+  </div>
+</app-modal>

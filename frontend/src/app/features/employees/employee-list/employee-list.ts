@@ -23,6 +23,8 @@ import { Employee, EmployeeListQuery, EmployeeStatus } from '../../../core/model
 import { Department } from '../../../core/models/department.model';
 import { extractErrorMessage } from '../../../core/utils/http-error.util';
 import { resolveFileUrl } from '../../../core/utils/file-url.util';
+import { employeeStatusVariant } from '../../../core/utils/status-variant.util';
+import { EmployeeStatusPipe } from '../../../shared/pipes/employee-status-pipe';
 
 const STATUS_OPTIONS: EmployeeStatus[] = ['ACTIVE', 'ON_LEAVE', 'INACTIVE', 'TERMINATED'];
 
@@ -40,6 +42,7 @@ const STATUS_OPTIONS: EmployeeStatus[] = ['ACTIVE', 'ON_LEAVE', 'INACTIVE', 'TER
     Pagination,
     StatusBadge,
     DatePipe,
+    EmployeeStatusPipe,
   ],
   selector: 'app-employee-list',
   styleUrl: './employee-list.scss',
@@ -76,6 +79,7 @@ export class EmployeeList {
   private readonly refreshTrigger = signal(0);
 
   protected readonly resolveFileUrl = resolveFileUrl;
+  protected readonly employeeStatusVariant = employeeStatusVariant;
 
   constructor() {
     this.departmentApi.list().subscribe({ next: (res) => this.departments.set(res.data) });

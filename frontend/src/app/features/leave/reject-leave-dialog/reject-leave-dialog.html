@@ -1,0 +1,20 @@
+<app-modal title="Reject leave request">
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <p class="hint">A reason is required so the employee understands why their request was rejected.</p>
+    <mat-form-field appearance="outline" class="reason-field">
+      <mat-label>Reason</mat-label>
+      <textarea matInput formControlName="reviewNote" rows="3"></textarea>
+      @if (form.controls.reviewNote.hasError('required') && form.controls.reviewNote.touched) {
+        <mat-error>A reason is required</mat-error>
+      }
+      @if (form.controls.reviewNote.hasError('minlength') && form.controls.reviewNote.touched) {
+        <mat-error>Please provide a bit more detail (at least 5 characters)</mat-error>
+      }
+    </mat-form-field>
+  </form>
+
+  <div modalActions>
+    <button mat-button type="button" mat-dialog-close>Cancel</button>
+    <button mat-flat-button color="warn" type="button" (click)="submit()">Reject Request</button>
+  </div>
+</app-modal>

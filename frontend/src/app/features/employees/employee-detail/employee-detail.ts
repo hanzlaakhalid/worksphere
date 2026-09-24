@@ -15,6 +15,8 @@ import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
 import { StatusBadge } from '../../../shared/ui/status-badge/status-badge';
 import { ConfirmDialog } from '../../../shared/ui/confirm-dialog/confirm-dialog';
 import { SalaryFormatPipe } from '../../../shared/pipes/salary-format-pipe';
+import { EmployeeStatusPipe } from '../../../shared/pipes/employee-status-pipe';
+import { employeeStatusVariant } from '../../../core/utils/status-variant.util';
 
 @Component({
   imports: [
@@ -28,6 +30,7 @@ import { SalaryFormatPipe } from '../../../shared/pipes/salary-format-pipe';
     EmptyState,
     StatusBadge,
     SalaryFormatPipe,
+    EmployeeStatusPipe,
   ],
   selector: 'app-employee-detail',
   styleUrl: './employee-detail.scss',
@@ -46,6 +49,7 @@ export class EmployeeDetail {
   protected readonly error = signal<string | null>(null);
   protected readonly employee = signal<Employee | null>(null);
   protected readonly resolveFileUrl = resolveFileUrl;
+  protected readonly employeeStatusVariant = employeeStatusVariant;
 
   constructor() {
     const id = this.route.snapshot.paramMap.get('id');

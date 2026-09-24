@@ -9,6 +9,9 @@ const employeeDetail = () =>
   import('./features/employees/employee-detail/employee-detail').then((m) => m.EmployeeDetail);
 const departmentList = () =>
   import('./features/departments/department-list/department-list').then((m) => m.DepartmentList);
+const attendanceList = () =>
+  import('./features/attendance/attendance-list/attendance-list').then((m) => m.AttendanceList);
+const leaveList = () => import('./features/leave/leave-list/leave-list').then((m) => m.LeaveList);
 
 /** Employee CRUD routes reused across role prefixes with a role-appropriate basePath/canManage. */
 function employeeRoutes(basePath: string, canManage: boolean) {
@@ -65,7 +68,8 @@ export const routes: Routes = [
       },
       { path: 'employees', children: employeeRoutes('/hr/employees', true) },
       { path: 'departments', loadComponent: departmentList },
-      { path: 'leave', data: { title: 'Leave Management' }, loadComponent: comingSoon },
+      { path: 'attendance', data: { scope: 'scoped' }, loadComponent: attendanceList },
+      { path: 'leave', data: { mode: 'review' }, loadComponent: leaveList },
       { path: 'recruitment', data: { title: 'Recruitment' }, loadComponent: comingSoon },
       { path: 'payroll', data: { title: 'Payroll' }, loadComponent: comingSoon },
     ],
@@ -82,7 +86,8 @@ export const routes: Routes = [
           import('./features/dashboard/manager-dashboard/manager-dashboard').then((m) => m.ManagerDashboard),
       },
       { path: 'team', children: employeeRoutes('/manager/team', false) },
-      { path: 'leave', data: { title: 'Leave' }, loadComponent: comingSoon },
+      { path: 'attendance', data: { scope: 'scoped' }, loadComponent: attendanceList },
+      { path: 'leave', data: { mode: 'review' }, loadComponent: leaveList },
       { path: 'performance', data: { title: 'Performance' }, loadComponent: comingSoon },
     ],
   },
@@ -98,8 +103,8 @@ export const routes: Routes = [
           import('./features/dashboard/employee-dashboard/employee-dashboard').then((m) => m.EmployeeDashboard),
       },
       { path: 'profile', data: { title: 'Profile' }, loadComponent: comingSoon },
-      { path: 'attendance', data: { title: 'Attendance' }, loadComponent: comingSoon },
-      { path: 'leave', data: { title: 'Leave' }, loadComponent: comingSoon },
+      { path: 'attendance', data: { scope: 'self' }, loadComponent: attendanceList },
+      { path: 'leave', data: { mode: 'self' }, loadComponent: leaveList },
       { path: 'payroll', data: { title: 'Payroll' }, loadComponent: comingSoon },
     ],
   },

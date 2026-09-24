@@ -17,14 +17,16 @@ export const NAV_ITEMS_BY_ROLE: Record<Role, NavItem[]> = {
     { label: 'Dashboard', icon: 'dashboard', route: '/hr/dashboard' },
     { label: 'Employees', icon: 'group', route: '/hr/employees' },
     { label: 'Departments', icon: 'apartment', route: '/hr/departments' },
-    { label: 'Leave Management', icon: 'event_available', route: '/hr/leave' },
+    { label: 'Attendance', icon: 'event_available', route: '/hr/attendance' },
+    { label: 'Leave Management', icon: 'beach_access', route: '/hr/leave' },
     { label: 'Recruitment', icon: 'work', route: '/hr/recruitment' },
     { label: 'Payroll', icon: 'payments', route: '/hr/payroll' },
   ],
   MANAGER: [
     { label: 'Dashboard', icon: 'dashboard', route: '/manager/dashboard' },
     { label: 'Team', icon: 'groups', route: '/manager/team' },
-    { label: 'Leave', icon: 'event_available', route: '/manager/leave' },
+    { label: 'Attendance', icon: 'event_available', route: '/manager/attendance' },
+    { label: 'Leave', icon: 'beach_access', route: '/manager/leave' },
     { label: 'Performance', icon: 'insights', route: '/manager/performance' },
   ],
   EMPLOYEE: [

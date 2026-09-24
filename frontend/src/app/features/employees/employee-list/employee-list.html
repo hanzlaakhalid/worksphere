@@ -86,7 +86,9 @@
 
       <ng-container matColumnDef="status">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
-        <td mat-cell *matCellDef="let emp"><app-status-badge [status]="emp.status" /></td>
+        <td mat-cell *matCellDef="let emp">
+          <app-status-badge [label]="emp.status | employeeStatus" [variant]="employeeStatusVariant(emp.status)" />
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="joiningDate">

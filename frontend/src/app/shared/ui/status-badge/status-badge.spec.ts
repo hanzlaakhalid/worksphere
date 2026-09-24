@@ -10,7 +10,8 @@ describe('StatusBadge', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(StatusBadge);
-    fixture.componentRef.setInput('status', 'ON_LEAVE');
+    fixture.componentRef.setInput('label', 'On Leave');
+    fixture.componentRef.setInput('variant', 'warning');
     fixture.detectChanges();
     await fixture.whenStable();
   });
@@ -19,13 +20,21 @@ describe('StatusBadge', () => {
     expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('renders the human-readable label', () => {
+  it('renders the given label', () => {
     const el = fixture.nativeElement as HTMLElement;
     expect(el.textContent).toContain('On Leave');
   });
 
-  it('applies the matching color class', () => {
+  it('applies the matching variant class', () => {
     const el = fixture.nativeElement as HTMLElement;
-    expect(el.querySelector('.status-on-leave')).toBeTruthy();
+    expect(el.querySelector('.variant-warning')).toBeTruthy();
+  });
+
+  it('defaults to the neutral variant when none is bound', () => {
+    const freshFixture = TestBed.createComponent(StatusBadge);
+    freshFixture.componentRef.setInput('label', 'Draft');
+    freshFixture.detectChanges();
+    const el = freshFixture.nativeElement as HTMLElement;
+    expect(el.querySelector('.variant-neutral')).toBeTruthy();
   });
 });

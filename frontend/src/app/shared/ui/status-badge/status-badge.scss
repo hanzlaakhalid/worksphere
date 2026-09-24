@@ -9,22 +9,22 @@
   white-space: nowrap;
 }
 
-.status-active {
+.variant-success {
   background: #dcf5e3;
   color: #1e7a3a;
 }
 
-.status-on-leave {
+.variant-warning {
   background: #fff2cf;
   color: #93690a;
 }
 
-.status-inactive {
+.variant-neutral {
   background: #e8e8ea;
   color: #55565c;
 }
 
-.status-terminated {
+.variant-danger {
   background: #fbdede;
   color: #a32424;
 }

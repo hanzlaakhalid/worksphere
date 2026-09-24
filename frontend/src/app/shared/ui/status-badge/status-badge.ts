@@ -1,21 +1,14 @@
-import { Component, computed, input } from '@angular/core';
-import { EmployeeStatus } from '../../../core/models/employee.model';
-import { EmployeeStatusPipe } from '../../pipes/employee-status-pipe';
+import { Component, input } from '@angular/core';
 
-const COLOR_CLASS: Record<EmployeeStatus, string> = {
-  ACTIVE: 'status-active',
-  ON_LEAVE: 'status-on-leave',
-  INACTIVE: 'status-inactive',
-  TERMINATED: 'status-terminated',
-};
+export type BadgeVariant = 'success' | 'warning' | 'neutral' | 'danger';
 
 @Component({
-  imports: [EmployeeStatusPipe],
+  imports: [],
   selector: 'app-status-badge',
   styleUrl: './status-badge.scss',
   templateUrl: './status-badge.html',
 })
 export class StatusBadge {
-  readonly status = input.required<EmployeeStatus>();
-  protected readonly colorClass = computed(() => COLOR_CLASS[this.status()]);
+  readonly label = input.required<string>();
+  readonly variant = input<BadgeVariant>('neutral');
 }

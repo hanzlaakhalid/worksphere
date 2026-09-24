@@ -22,7 +22,7 @@
         <div class="summary">
           <h1>{{ emp.firstName }} {{ emp.lastName }}</h1>
           <p class="subtitle">{{ emp.position || 'No position set' }} &middot; {{ emp.employeeCode }}</p>
-          <app-status-badge [status]="emp.status" />
+          <app-status-badge [label]="emp.status | employeeStatus" [variant]="employeeStatusVariant(emp.status)" />
         </div>
 
         @if (canManage) {

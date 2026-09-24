@@ -49,6 +49,7 @@ describe('MainLayout', () => {
       'Dashboard',
       'Employees',
       'Departments',
+      'Attendance',
       'Leave Management',
       'Recruitment',
       'Payroll',
