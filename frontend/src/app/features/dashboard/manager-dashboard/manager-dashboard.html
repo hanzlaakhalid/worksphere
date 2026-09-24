@@ -1,0 +1,18 @@
+<div class="dashboard">
+  <header class="dashboard-header">
+    <h1>Welcome back, {{ authFacade.currentUser()?.firstName }}</h1>
+    <p>Here's a quick overview of your team.</p>
+  </header>
+
+  <div class="quick-links">
+    @for (link of quickLinks; track link.route) {
+      <app-dashboard-card [icon]="link.icon" [title]="link.label" [routerLink]="link.route" />
+    }
+  </div>
+
+  <app-empty-state
+    icon="insights"
+    title="Analytics dashboard coming soon"
+    description="Team attendance, leave, and performance trends will appear here once the dashboard API is built in Phase 8."
+  />
+</div>

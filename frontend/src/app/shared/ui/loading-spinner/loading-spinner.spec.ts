@@ -1,18 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
-import { AdminOnly } from './admin-only';
+import { LoadingSpinner } from './loading-spinner';
 
-describe('AdminOnly', () => {
-  let component: AdminOnly;
-  let fixture: ComponentFixture<AdminOnly>;
+describe('LoadingSpinner', () => {
+  let component: LoadingSpinner;
+  let fixture: ComponentFixture<LoadingSpinner>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AdminOnly],
-      providers: [provideRouter([])],
+      imports: [LoadingSpinner],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(AdminOnly);
+    fixture = TestBed.createComponent(LoadingSpinner);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

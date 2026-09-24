@@ -6,6 +6,7 @@ import { AuthActions } from './auth.actions';
 import { AuthApi } from '../../auth/auth-api';
 import { TokenStorage } from '../../auth/token-storage';
 import { extractErrorMessage } from '../../utils/http-error.util';
+import { dashboardRouteForRole } from '../../utils/role-routes.util';
 
 @Service()
 export class AuthEffects {
@@ -20,7 +21,7 @@ export class AuthEffects {
       switchMap(({ request, returnUrl }) =>
         this.authApi.login(request).pipe(
           tap(({ accessToken }) => this.tokenStorage.setToken(accessToken)),
-          tap(() => this.router.navigateByUrl(returnUrl || '/home')),
+          tap(({ user }) => this.router.navigateByUrl(returnUrl || dashboardRouteForRole(user.role))),
           map(({ user, accessToken }) => AuthActions.loginSuccess({ user, accessToken })),
           catchError((err) => of(AuthActions.loginFailure({ error: extractErrorMessage(err, 'Invalid email or password') }))),
         ),
@@ -65,7 +66,7 @@ export class AuthEffects {
     () =>
       this.actions$.pipe(
         ofType(AuthActions.registerSuccess),
-        tap(() => this.router.navigateByUrl('/home')),
+        tap(({ user }) => this.router.navigateByUrl(dashboardRouteForRole(user.role))),
       ),
     { dispatch: false },
   );

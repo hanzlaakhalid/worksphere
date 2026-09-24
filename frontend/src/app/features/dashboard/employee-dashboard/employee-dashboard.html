@@ -1,0 +1,18 @@
+<div class="dashboard">
+  <header class="dashboard-header">
+    <h1>Welcome back, {{ authFacade.currentUser()?.firstName }}</h1>
+    <p>Here's quick access to your workspace.</p>
+  </header>
+
+  <div class="quick-links">
+    @for (link of quickLinks; track link.route) {
+      <app-dashboard-card [icon]="link.icon" [title]="link.label" [routerLink]="link.route" />
+    }
+  </div>
+
+  <app-empty-state
+    icon="insights"
+    title="Announcements coming soon"
+    description="Company announcements and notifications will appear here once that module is built in Phase 7."
+  />
+</div>

@@ -1,0 +1,16 @@
+<mat-card class="dashboard-card" [class.clickable]="!!routerLink()" [routerLink]="routerLink()">
+  <mat-card-content>
+    <div class="icon-wrap">
+      <mat-icon>{{ icon() }}</mat-icon>
+    </div>
+    <div class="text">
+      <span class="title">{{ title() }}</span>
+      @if (value()) {
+        <span class="value">{{ value() }}</span>
+      }
+      @if (subtitle()) {
+        <span class="subtitle">{{ subtitle() }}</span>
+      }
+    </div>
+  </mat-card-content>
+</mat-card>
