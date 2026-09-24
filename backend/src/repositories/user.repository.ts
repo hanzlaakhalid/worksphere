@@ -17,4 +17,8 @@ export const userRepository = {
   updatePasswordHash(id: string, passwordHash: string) {
     return prisma.user.update({ where: { id }, data: { passwordHash } });
   },
+
+  delete(id: string) {
+    return prisma.user.delete({ where: { id } });
+  },
 };
