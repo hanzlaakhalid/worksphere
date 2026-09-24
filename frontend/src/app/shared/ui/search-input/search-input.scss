@@ -1,0 +1,8 @@
+.search-field {
+  width: 100%;
+  max-width: 320px;
+
+  ::ng-deep .mat-mdc-text-field-wrapper {
+    padding-top: 0;
+  }
+}

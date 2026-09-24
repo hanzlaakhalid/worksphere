@@ -1,0 +1,44 @@
+<app-modal [title]="isEditMode ? 'Edit Department' : 'New Department'">
+  <form [formGroup]="form" (ngSubmit)="submit()" class="department-form">
+    @if (error()) {
+      <div class="form-error" role="alert">{{ error() }}</div>
+    }
+
+    <mat-form-field appearance="outline">
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="name" />
+      @if (form.controls.name.hasError('required') && form.controls.name.touched) {
+        <mat-error>Name is required</mat-error>
+      }
+      @if (form.controls.name.hasError('minlength') && form.controls.name.touched) {
+        <mat-error>Name must be at least 2 characters</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description" rows="3"></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Manager</mat-label>
+      <mat-select formControlName="managerId">
+        <mat-option [value]="null">No manager assigned</mat-option>
+        @for (mgr of managers(); track mgr.id) {
+          <mat-option [value]="mgr.id">{{ mgr.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </form>
+
+  <div modalActions>
+    <button mat-button type="button" mat-dialog-close>Cancel</button>
+    <button mat-flat-button color="primary" type="submit" [disabled]="saving()" (click)="submit()">
+      @if (saving()) {
+        <mat-spinner diameter="20" />
+      } @else {
+        {{ isEditMode ? 'Save Changes' : 'Create Department' }}
+      }
+    </button>
+  </div>
+</app-modal>

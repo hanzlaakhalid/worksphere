@@ -1,0 +1,24 @@
+<div class="file-upload">
+  <div class="preview">
+    @if (previewUrl() || resolvedCurrentUrl()) {
+      <img [src]="previewUrl() ?? resolvedCurrentUrl()" alt="Preview" />
+    } @else {
+      <mat-icon>person</mat-icon>
+    }
+  </div>
+
+  <div class="controls">
+    <button mat-stroked-button type="button" (click)="fileInput.click()" [disabled]="uploading()">
+      <mat-icon>upload</mat-icon>
+      {{ label() }}
+    </button>
+    <input #fileInput type="file" [accept]="accept()" hidden (change)="onFileSelected($event)" />
+
+    @if (uploading()) {
+      <mat-progress-bar mode="determinate" [value]="progress()" />
+    }
+    @if (error()) {
+      <span class="error">{{ error() }}</span>
+    }
+  </div>
+</div>

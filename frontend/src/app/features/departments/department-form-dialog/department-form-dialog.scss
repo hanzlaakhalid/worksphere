@@ -1,0 +1,14 @@
+.department-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 360px;
+}
+
+.form-error {
+  background: color-mix(in srgb, var(--mat-sys-error) 12%, transparent);
+  color: var(--mat-sys-error);
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 0.875rem;
+}

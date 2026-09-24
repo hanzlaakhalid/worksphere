@@ -48,6 +48,7 @@ describe('MainLayout', () => {
     expect(component['navItems']().map((item) => item.label)).toEqual([
       'Dashboard',
       'Employees',
+      'Departments',
       'Leave Management',
       'Recruitment',
       'Payroll',

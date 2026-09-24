@@ -1,0 +1,106 @@
+@if (loading()) {
+  <app-loading-spinner message="Loading employee..." />
+} @else if (error() && !employee()) {
+  <app-empty-state icon="error_outline" title="Couldn't load this employee" [description]="error() ?? ''">
+    <button mat-stroked-button (click)="back()">Back to list</button>
+  </app-empty-state>
+} @else if (employee(); as emp) {
+  <div class="page">
+    <button mat-button class="back-link" (click)="back()">
+      <mat-icon>arrow_back</mat-icon>
+      Back
+    </button>
+
+    <mat-card class="header-card">
+      <mat-card-content class="header-content">
+        @if (resolveFileUrl(emp.profilePictureUrl); as photo) {
+          <img [src]="photo" alt="" class="avatar" />
+        } @else {
+          <span class="avatar avatar-fallback">{{ emp.firstName.charAt(0) }}{{ emp.lastName.charAt(0) }}</span>
+        }
+
+        <div class="summary">
+          <h1>{{ emp.firstName }} {{ emp.lastName }}</h1>
+          <p class="subtitle">{{ emp.position || 'No position set' }} &middot; {{ emp.employeeCode }}</p>
+          <app-status-badge [status]="emp.status" />
+        </div>
+
+        @if (canManage) {
+          <div class="header-actions">
+            <button mat-stroked-button (click)="edit()">
+              <mat-icon>edit</mat-icon>
+              Edit
+            </button>
+            <button mat-stroked-button color="warn" (click)="remove()">
+              <mat-icon>delete</mat-icon>
+              Delete
+            </button>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <mat-tab-group class="detail-tabs">
+      <mat-tab label="Overview">
+        <div class="tab-content grid">
+          <div class="field"><span class="label">First name</span><span>{{ emp.firstName }}</span></div>
+          <div class="field"><span class="label">Last name</span><span>{{ emp.lastName }}</span></div>
+          <div class="field">
+            <span class="label">Date of birth</span>
+            <span>{{ emp.dateOfBirth ? (emp.dateOfBirth | date: 'mediumDate') : '—' }}</span>
+          </div>
+          <div class="field"><span class="label">Gender</span><span>{{ emp.gender ?? '—' }}</span></div>
+          <div class="field"><span class="label">Address</span><span>{{ emp.address || '—' }}</span></div>
+          <div class="field"><span class="label">Email</span><span>{{ emp.email }}</span></div>
+          <div class="field"><span class="label">Phone</span><span>{{ emp.phone || '—' }}</span></div>
+
+          <div class="field full-width">
+            <span class="label">Emergency Contact</span>
+            <app-empty-state icon="contact_emergency" title="Not collected yet" description="This section isn't part of the employee form yet." />
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Employment">
+        <div class="tab-content grid">
+          <div class="field"><span class="label">Department</span><span>{{ emp.department?.name ?? '—' }}</span></div>
+          <div class="field"><span class="label">Position</span><span>{{ emp.position || '—' }}</span></div>
+          <div class="field">
+            <span class="label">Manager</span>
+            <span>{{ emp.manager ? emp.manager.firstName + ' ' + emp.manager.lastName : '—' }}</span>
+          </div>
+          <div class="field">
+            <span class="label">Joining date</span>
+            <span>{{ emp.joiningDate ? (emp.joiningDate | date: 'mediumDate') : '—' }}</span>
+          </div>
+          <div class="field"><span class="label">Employment type</span><span>{{ emp.employmentType.replace('_', ' ') }}</span></div>
+          <div class="field"><span class="label">Salary</span><span>{{ emp.salary | salaryFormat }}</span></div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Attendance & Leave">
+        <app-empty-state
+          icon="event_available"
+          title="Attendance & leave history coming soon"
+          description="This will show check-in/out records and leave requests once the Attendance and Leave modules are built."
+        />
+      </mat-tab>
+
+      <mat-tab label="Performance & Payroll">
+        <app-empty-state
+          icon="insights"
+          title="Performance & payroll coming soon"
+          description="Reviews, ratings, and payslips will appear here once those modules are built."
+        />
+      </mat-tab>
+
+      <mat-tab label="Documents">
+        <app-empty-state
+          icon="folder"
+          title="Documents coming soon"
+          description="Resumes, contracts, and certificates will be manageable here once the Documents module is built."
+        />
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+}

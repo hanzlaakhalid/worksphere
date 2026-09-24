@@ -1,0 +1,54 @@
+.page {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0 32px;
+}
+
+.form-card {
+  width: 100%;
+  max-width: 720px;
+}
+
+.employee-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.section-title {
+  margin: 16px 0 4px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  opacity: 0.75;
+}
+
+.field-row {
+  display: flex;
+  gap: 12px;
+
+  mat-form-field {
+    flex: 1;
+    min-width: 0;
+  }
+
+  @media (max-width: 599px) {
+    flex-direction: column;
+    gap: 0;
+  }
+}
+
+.form-error {
+  background: color-mix(in srgb, var(--mat-sys-error) 12%, transparent);
+  color: var(--mat-sys-error);
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 0.875rem;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}

@@ -1,0 +1,12 @@
+<div class="modal-header">
+  <h2 mat-dialog-title>{{ title() }}</h2>
+  <button mat-icon-button mat-dialog-close type="button" aria-label="Close">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+<mat-dialog-content>
+  <ng-content />
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <ng-content select="[modalActions]" />
+</mat-dialog-actions>

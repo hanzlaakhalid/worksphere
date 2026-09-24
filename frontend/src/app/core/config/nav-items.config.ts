@@ -16,6 +16,7 @@ export const NAV_ITEMS_BY_ROLE: Record<Role, NavItem[]> = {
   HR_MANAGER: [
     { label: 'Dashboard', icon: 'dashboard', route: '/hr/dashboard' },
     { label: 'Employees', icon: 'group', route: '/hr/employees' },
+    { label: 'Departments', icon: 'apartment', route: '/hr/departments' },
     { label: 'Leave Management', icon: 'event_available', route: '/hr/leave' },
     { label: 'Recruitment', icon: 'work', route: '/hr/recruitment' },
     { label: 'Payroll', icon: 'payments', route: '/hr/payroll' },

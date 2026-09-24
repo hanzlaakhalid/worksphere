@@ -1,0 +1,9 @@
+@if (loading()) {
+  <app-loading-spinner message="Loading..." />
+} @else if (empty()) {
+  <app-empty-state [icon]="emptyIcon()" [title]="emptyTitle()" [description]="emptyDescription()" />
+}
+
+<div class="table-scroll" [hidden]="loading() || empty()">
+  <ng-content />
+</div>
