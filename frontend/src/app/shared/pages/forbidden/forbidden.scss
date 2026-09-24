@@ -1,0 +1,21 @@
+.page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 16px;
+}
+
+.forbidden-card {
+  max-width: 400px;
+  text-align: center;
+  padding: 24px;
+}
+
+.icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  color: var(--mat-sys-error);
+  margin-bottom: 8px;
+}

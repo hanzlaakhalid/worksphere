@@ -1,0 +1,23 @@
+<div class="page">
+  <mat-card class="welcome-card">
+    <mat-card-header>
+      <mat-card-title>Welcome, {{ authFacade.currentUser()?.firstName }} {{ authFacade.currentUser()?.lastName }}</mat-card-title>
+      <mat-card-subtitle>{{ authFacade.currentUser()?.email }}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-chip-set>
+        <mat-chip>{{ authFacade.role() }}</mat-chip>
+      </mat-chip-set>
+      <p class="hint">
+        This is a temporary landing page proving auth end-to-end (guard, interceptor, NgRx store).
+        It will be replaced by the real role-based dashboard layout in Phase 3.
+      </p>
+      @if (authFacade.role() === 'ADMIN') {
+        <a mat-stroked-button routerLink="/admin-only">Go to admin-only page</a>
+      }
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-flat-button color="warn" (click)="logout()">Log out</button>
+    </mat-card-actions>
+  </mat-card>
+</div>
