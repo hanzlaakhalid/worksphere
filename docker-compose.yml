@@ -1,0 +1,36 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: worksphere-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: worksphere
+      POSTGRES_PASSWORD: worksphere_dev_password
+      POSTGRES_DB: worksphere
+    ports:
+      - "5433:5432"
+    volumes:
+      - worksphere_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U worksphere -d worksphere"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: worksphere-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@worksphere.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    profiles:
+      - tools
+
+volumes:
+  worksphere_postgres_data:

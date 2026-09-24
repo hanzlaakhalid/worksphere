@@ -1,0 +1,46 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build output
+dist/
+build/
+out-tsc/
+.angular/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+logs/
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude Code local session config
+.claude/
+
+# Testing / coverage
+coverage/
+
+# Prisma
+backend/prisma/dev.db
+
+# Uploaded files (dev)
+backend/uploads/
+
+# Docker volumes (if any local bind mounts are added later)
+.docker-data/
