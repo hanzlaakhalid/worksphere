@@ -6,5 +6,23 @@ datasource db {
   provider = "postgresql"
 }
 
-// Domain models are added incrementally per phase, starting with
-// User/Role in Phase 2 (Authentication & Authorization).
+enum Role {
+  ADMIN
+  HR_MANAGER
+  MANAGER
+  EMPLOYEE
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  firstName    String
+  lastName     String
+  role         Role     @default(EMPLOYEE)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([role])
+}
