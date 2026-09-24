@@ -1,4 +1,13 @@
-import { EmployeeStatus, EmploymentType, Gender, PrismaClient, Role } from '@prisma/client';
+import {
+  AttendanceStatus,
+  EmployeeStatus,
+  EmploymentType,
+  Gender,
+  LeaveStatus,
+  LeaveType,
+  PrismaClient,
+  Role,
+} from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import bcrypt from 'bcryptjs';
 import 'dotenv/config';
@@ -256,6 +265,148 @@ const seedEmployees: SeedEmployee[] = [
   },
 ];
 
+function daysFromToday(offset: number): Date {
+  const date = new Date();
+  date.setUTCHours(0, 0, 0, 0);
+  date.setUTCDate(date.getUTCDate() + offset);
+  return date;
+}
+
+function withTime(date: Date, hours: number, minutes: number): Date {
+  const result = new Date(date);
+  result.setUTCHours(hours, minutes, 0, 0);
+  return result;
+}
+
+/** The `count` most recent weekdays, ending at today (or the prior Friday if today is a weekend). */
+function pastWeekdays(count: number): Date[] {
+  const dates: Date[] = [];
+  const cursor = daysFromToday(0);
+  while (dates.length < count) {
+    const day = cursor.getUTCDay();
+    if (day !== 0 && day !== 6) {
+      dates.push(new Date(cursor));
+    }
+    cursor.setUTCDate(cursor.getUTCDate() - 1);
+  }
+  return dates.reverse();
+}
+
+function dateRange(start: Date, end: Date): Date[] {
+  const dates: Date[] = [];
+  const cursor = new Date(start);
+  while (cursor.getTime() <= end.getTime()) {
+    dates.push(new Date(cursor));
+    cursor.setUTCDate(cursor.getUTCDate() + 1);
+  }
+  return dates;
+}
+
+interface SeedLeave {
+  email: string;
+  leaveType: LeaveType;
+  startOffset: number;
+  endOffset: number;
+  reason: string;
+  status: LeaveStatus;
+  reviewerEmail: string | null;
+  reviewNote?: string;
+}
+
+const seedLeaves: SeedLeave[] = [
+  {
+    email: 'employee7@worksphere.local',
+    leaveType: LeaveType.SICK,
+    startOffset: -1,
+    endOffset: 2,
+    reason: 'Recovering from a flu, doctor recommended rest through the week.',
+    status: LeaveStatus.APPROVED,
+    reviewerEmail: 'hr1@worksphere.local',
+  },
+  {
+    email: 'employee1@worksphere.local',
+    leaveType: LeaveType.ANNUAL,
+    startOffset: 14,
+    endOffset: 18,
+    reason: 'Family trip booked for the third week of next month.',
+    status: LeaveStatus.PENDING,
+    reviewerEmail: null,
+  },
+  {
+    email: 'employee2@worksphere.local',
+    leaveType: LeaveType.SICK,
+    startOffset: 2,
+    endOffset: 3,
+    reason: 'Follow-up medical appointment and recovery day.',
+    status: LeaveStatus.PENDING,
+    reviewerEmail: null,
+  },
+  {
+    email: 'employee4@worksphere.local',
+    leaveType: LeaveType.CASUAL,
+    startOffset: 5,
+    endOffset: 5,
+    reason: 'Attending a family event.',
+    status: LeaveStatus.PENDING,
+    reviewerEmail: null,
+  },
+  {
+    email: 'employee6@worksphere.local',
+    leaveType: LeaveType.EMERGENCY,
+    startOffset: 1,
+    endOffset: 1,
+    reason: 'Urgent family matter that requires my attention tomorrow.',
+    status: LeaveStatus.PENDING,
+    reviewerEmail: null,
+  },
+  {
+    email: 'employee3@worksphere.local',
+    leaveType: LeaveType.ANNUAL,
+    startOffset: -30,
+    endOffset: -25,
+    reason: 'Annual leave taken last month.',
+    status: LeaveStatus.APPROVED,
+    reviewerEmail: 'manager1@worksphere.local',
+  },
+  {
+    email: 'employee5@worksphere.local',
+    leaveType: LeaveType.CASUAL,
+    startOffset: -10,
+    endOffset: -9,
+    reason: 'Wanted to extend the weekend for a personal trip.',
+    status: LeaveStatus.REJECTED,
+    reviewerEmail: 'manager2@worksphere.local',
+    reviewNote: 'Team was short-staffed that week during a customer launch; please propose different dates.',
+  },
+  {
+    email: 'employee8@worksphere.local',
+    leaveType: LeaveType.UNPAID,
+    startOffset: -60,
+    endOffset: -55,
+    reason: 'Personal leave of absence.',
+    status: LeaveStatus.APPROVED,
+    reviewerEmail: 'hr2@worksphere.local',
+  },
+  {
+    email: 'employee9@worksphere.local',
+    leaveType: LeaveType.CASUAL,
+    startOffset: 7,
+    endOffset: 7,
+    reason: 'Personal appointment.',
+    status: LeaveStatus.PENDING,
+    reviewerEmail: null,
+  },
+  {
+    email: 'employee10@worksphere.local',
+    leaveType: LeaveType.ANNUAL,
+    startOffset: -15,
+    endOffset: -14,
+    reason: 'Short trip home during a quiet sprint week.',
+    status: LeaveStatus.APPROVED,
+    reviewerEmail: 'hr1@worksphere.local',
+  },
+];
+
 async function main() {
   const passwordHash = await bcrypt.hash(DEV_PASSWORD, 10);
 
@@ -345,6 +496,99 @@ async function main() {
     employeeIdByEmail.set(seedEmployee.email, employee.id);
   }
   console.log(`Seeded ${employeeIdByEmail.size} employee records.`);
+
+  // Attendance: the last 20 weekdays for every employee, with a realistic
+  // mostly-present distribution. Deterministic per (employee, date) via a
+  // simple hash so re-seeding is idempotent in spirit even though the
+  // upsert below already makes it idempotent in practice.
+  const weekdays = pastWeekdays(20);
+  let attendanceCount = 0;
+  for (const [email, employeeId] of employeeIdByEmail) {
+    for (const date of weekdays) {
+      const hash = Math.abs(hashCode(`${email}:${date.toISOString()}`)) % 100;
+
+      let status: AttendanceStatus;
+      let checkIn: Date | null = null;
+      let checkOut: Date | null = null;
+      let workingHours: number | null = null;
+
+      if (hash < 4) {
+        status = AttendanceStatus.ABSENT;
+      } else if (hash < 7) {
+        status = AttendanceStatus.HALF_DAY;
+        checkIn = withTime(date, 9, 5);
+        checkOut = withTime(date, 13, 0);
+        workingHours = 3.92;
+      } else if (hash < 15) {
+        status = AttendanceStatus.LATE;
+        checkIn = withTime(date, 9, 45);
+        checkOut = withTime(date, 18, 0);
+        workingHours = 8.25;
+      } else {
+        status = AttendanceStatus.PRESENT;
+        checkIn = withTime(date, 9, 0);
+        checkOut = withTime(date, 17, 45);
+        workingHours = 8.75;
+      }
+
+      await prisma.attendance.upsert({
+        where: { employeeId_date: { employeeId, date } },
+        update: {},
+        create: { employeeId, date, status, checkIn, checkOut, workingHours },
+      });
+      attendanceCount += 1;
+    }
+  }
+  console.log(`Seeded ${attendanceCount} attendance records across ${weekdays.length} weekdays.`);
+
+  // Leave requests: a mix of pending/approved/rejected across different
+  // reviewers, so the approval queue has real work in it out of the box.
+  let leaveCount = 0;
+  for (const leave of seedLeaves) {
+    const employeeId = employeeIdByEmail.get(leave.email)!;
+    const startDate = daysFromToday(leave.startOffset);
+    const endDate = daysFromToday(leave.endOffset);
+    const reviewerId = leave.reviewerEmail ? employeeIdByEmail.get(leave.reviewerEmail)! : null;
+
+    const existing = await prisma.leaveRequest.findFirst({
+      where: { employeeId, startDate, leaveType: leave.leaveType },
+    });
+    if (existing) continue;
+
+    await prisma.leaveRequest.create({
+      data: {
+        employeeId,
+        leaveType: leave.leaveType,
+        startDate,
+        endDate,
+        reason: leave.reason,
+        status: leave.status,
+        reviewedById: reviewerId,
+        reviewNote: leave.reviewNote ?? null,
+      },
+    });
+    leaveCount += 1;
+
+    if (leave.status === LeaveStatus.APPROVED) {
+      for (const date of dateRange(startDate, endDate)) {
+        await prisma.attendance.upsert({
+          where: { employeeId_date: { employeeId, date } },
+          update: { status: AttendanceStatus.ON_LEAVE },
+          create: { employeeId, date, status: AttendanceStatus.ON_LEAVE },
+        });
+      }
+    }
+  }
+  console.log(`Seeded ${leaveCount} leave requests.`);
+}
+
+function hashCode(value: string): number {
+  let hash = 0;
+  for (let i = 0; i < value.length; i++) {
+    hash = (hash << 5) - hash + value.charCodeAt(i);
+    hash |= 0;
+  }
+  return hash;
 }
 
 main()

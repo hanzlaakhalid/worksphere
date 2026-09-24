@@ -7,6 +7,8 @@ import { healthRouter } from './routes/health.routes';
 import { authRouter } from './routes/auth.routes';
 import { departmentRouter } from './routes/department.routes';
 import { employeeRouter } from './routes/employee.routes';
+import { attendanceRouter } from './routes/attendance.routes';
+import { leaveRouter } from './routes/leave.routes';
 import { uploadRouter } from './routes/upload.routes';
 import { UPLOADS_DIR } from './middleware/upload';
 import { notFoundHandler, errorHandler } from './middleware/errorHandler';
@@ -37,6 +39,8 @@ export function createApp() {
   app.use('/api/auth', authRouter);
   app.use('/api/departments', departmentRouter);
   app.use('/api/employees', employeeRouter);
+  app.use('/api/attendance', attendanceRouter);
+  app.use('/api/leaves', leaveRouter);
   app.use('/api/uploads', uploadRouter);
 
   app.use(notFoundHandler);

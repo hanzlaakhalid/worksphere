@@ -33,6 +33,28 @@ enum EmployeeStatus {
   TERMINATED
 }
 
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  HALF_DAY
+  ON_LEAVE
+}
+
+enum LeaveType {
+  ANNUAL
+  SICK
+  CASUAL
+  EMERGENCY
+  UNPAID
+}
+
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model User {
   id           String    @id @default(cuid())
   email        String    @unique
@@ -83,7 +105,48 @@ model Employee {
   createdAt          DateTime       @default(now())
   updatedAt          DateTime       @updatedAt
 
+  attendanceRecords  Attendance[]
+  leaveRequests      LeaveRequest[]    @relation("LeaveRequester")
+  reviewedLeaves     LeaveRequest[]    @relation("LeaveReviewer")
+
   @@index([departmentId])
   @@index([managerId])
+  @@index([status])
+}
+
+model Attendance {
+  id           String           @id @default(cuid())
+  employeeId   String
+  employee     Employee         @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  date         DateTime         @db.Date
+  checkIn      DateTime?
+  checkOut     DateTime?
+  workingHours Decimal?         @db.Decimal(5, 2)
+  status       AttendanceStatus @default(PRESENT)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@unique([employeeId, date])
+  @@index([date])
+  @@index([status])
+}
+
+model LeaveRequest {
+  id            String      @id @default(cuid())
+  employeeId    String
+  employee      Employee    @relation("LeaveRequester", fields: [employeeId], references: [id], onDelete: Cascade)
+  leaveType     LeaveType
+  startDate     DateTime    @db.Date
+  endDate       DateTime    @db.Date
+  reason        String
+  attachmentUrl String?
+  status        LeaveStatus @default(PENDING)
+  reviewedById  String?
+  reviewedBy    Employee?   @relation("LeaveReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  reviewNote    String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([employeeId])
   @@index([status])
 }

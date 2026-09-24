@@ -4,6 +4,7 @@ import { userRepository } from '../repositories/user.repository';
 import { prisma } from '../lib/prisma';
 import { ApiError } from '../lib/apiError';
 import { hashPassword } from '../lib/password';
+import { resolveEmployeeId } from './employee-scope.util';
 import type { CreateEmployeeInput, ListEmployeesQuery, UpdateEmployeeInput } from '../validation/employee.validation';
 import type { EmployeeDto, PaginatedResult } from '../types/employee.types';
 
@@ -40,14 +41,6 @@ function toDto(employee: EmployeeWithRelations): EmployeeDto {
   };
 }
 
-async function resolveEmployeeIdForUser(userId: string): Promise<string> {
-  const employee = await employeeRepository.findByUserId(userId);
-  if (!employee) {
-    throw ApiError.notFound('No employee record is linked to your account yet');
-  }
-  return employee.id;
-}
-
 export const employeeService = {
   async list(query: ListEmployeesQuery, requester: { userId: string; role: Role }): Promise<PaginatedResult<EmployeeDto>> {
     const where: Prisma.EmployeeWhereInput = {};
@@ -71,7 +64,7 @@ export const employeeService = {
     }
 
     if (requester.role === 'MANAGER') {
-      where.managerId = await resolveEmployeeIdForUser(requester.userId);
+      where.managerId = await resolveEmployeeId(requester.userId);
     }
 
     const orderBy: Prisma.EmployeeOrderByWithRelationInput =
@@ -101,7 +94,7 @@ export const employeeService = {
     }
 
     if (requester.role === 'MANAGER') {
-      const managerEmployeeId = await resolveEmployeeIdForUser(requester.userId);
+      const managerEmployeeId = await resolveEmployeeId(requester.userId);
       if (employee.managerId !== managerEmployeeId && employee.id !== managerEmployeeId) {
         throw ApiError.forbidden('You can only view employees on your team');
       }

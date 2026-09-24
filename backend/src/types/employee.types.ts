@@ -33,9 +33,4 @@ export interface EmployeeDto {
   createdAt: Date;
 }
 
-export interface PaginatedResult<T> {
-  data: T[];
-  page: number;
-  pageSize: number;
-  total: number;
-}
+export type { PaginatedResult } from './pagination.types';
