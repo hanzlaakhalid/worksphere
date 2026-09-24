@@ -62,7 +62,10 @@ export const authService = {
 
     const currentMatches = await comparePassword(input.currentPassword, user.passwordHash);
     if (!currentMatches) {
-      throw ApiError.unauthorized('Current password is incorrect');
+      // 400, not 401: the caller IS authenticated, they just supplied the wrong
+      // current password. A 401 here would be indistinguishable from an expired
+      // token and would trigger the frontend's global auto-logout interceptor.
+      throw ApiError.badRequest('Current password is incorrect');
     }
 
     const newPasswordHash = await hashPassword(input.newPassword);
