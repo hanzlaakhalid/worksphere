@@ -1,7 +1,8 @@
 import type { Prisma, Role } from '@prisma/client';
 import { performanceRepository, PerformanceReviewWithRelations } from '../repositories/performance.repository';
 import { employeeRepository } from '../repositories/employee.repository';
-import { resolveEmployeeId } from './employee-scope.util';
+import { resolveEmployeeId, resolveUserForEmployeeId, notificationLink } from './employee-scope.util';
+import { notificationService } from './notification.service';
 import { ApiError } from '../lib/apiError';
 import type {
   CreatePerformanceReviewInput,
@@ -79,6 +80,17 @@ export const performanceService = {
       areasForImprovement: input.areasForImprovement,
       managerComments: input.managerComments,
     });
+
+    const recipient = await resolveUserForEmployeeId(input.employeeId);
+    if (recipient) {
+      await notificationService.notify({
+        userId: recipient.userId,
+        type: 'REVIEW_SUBMITTED',
+        title: 'New performance review',
+        message: `A performance review for ${input.reviewPeriod} has been submitted.`,
+        link: notificationLink(recipient.role, 'performance'),
+      });
+    }
 
     return toDto(review);
   },

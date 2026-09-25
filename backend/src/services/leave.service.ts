@@ -1,7 +1,8 @@
 import type { Prisma, Role } from '@prisma/client';
 import { leaveRepository, LeaveWithRelations } from '../repositories/leave.repository';
 import { attendanceRepository } from '../repositories/attendance.repository';
-import { resolveEmployeeId, resolveTeamEmployeeIds } from './employee-scope.util';
+import { resolveEmployeeId, resolveTeamEmployeeIds, resolveUserForEmployeeId, notificationLink } from './employee-scope.util';
+import { notificationService } from './notification.service';
 import { dateRange } from '../lib/date';
 import { ApiError } from '../lib/apiError';
 import type { CreateLeaveInput, ListLeavesQuery, RejectLeaveInput } from '../validation/leave.validation';
@@ -118,11 +119,22 @@ export const leaveService = {
       });
     }
 
+    const recipient = await resolveUserForEmployeeId(leave.employeeId);
+    if (recipient) {
+      await notificationService.notify({
+        userId: recipient.userId,
+        type: 'LEAVE_APPROVED',
+        title: 'Leave request approved',
+        message: `Your ${leave.leaveType.toLowerCase()} leave request has been approved.`,
+        link: notificationLink(recipient.role, 'leave'),
+      });
+    }
+
     return toDto(updated);
   },
 
   async reject(id: string, input: RejectLeaveInput, requester: { userId: string; role: Role }): Promise<LeaveRequestDto> {
-    await requireReviewableByRequester(id, requester);
+    const leave = await requireReviewableByRequester(id, requester);
     const reviewerEmployeeId = await resolveEmployeeId(requester.userId);
 
     const updated = await leaveRepository.update(id, {
@@ -130,6 +142,17 @@ export const leaveService = {
       reviewedBy: { connect: { id: reviewerEmployeeId } },
       reviewNote: input.reviewNote,
     });
+
+    const recipient = await resolveUserForEmployeeId(leave.employeeId);
+    if (recipient) {
+      await notificationService.notify({
+        userId: recipient.userId,
+        type: 'LEAVE_REJECTED',
+        title: 'Leave request rejected',
+        message: `Your ${leave.leaveType.toLowerCase()} leave request was rejected: ${input.reviewNote}`,
+        link: notificationLink(recipient.role, 'leave'),
+      });
+    }
 
     return toDto(updated);
   },

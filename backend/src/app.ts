@@ -13,6 +13,10 @@ import { performanceRouter } from './routes/performance.routes';
 import { jobRouter } from './routes/job.routes';
 import { applicationRouter } from './routes/application.routes';
 import { payrollRouter } from './routes/payroll.routes';
+import { documentRouter } from './routes/document.routes';
+import { announcementRouter } from './routes/announcement.routes';
+import { notificationRouter } from './routes/notification.routes';
+import { searchRouter } from './routes/search.routes';
 import { uploadRouter } from './routes/upload.routes';
 import { UPLOADS_DIR } from './middleware/upload';
 import { notFoundHandler, errorHandler } from './middleware/errorHandler';
@@ -49,6 +53,10 @@ export function createApp() {
   app.use('/api/jobs', jobRouter);
   app.use('/api/applications', applicationRouter);
   app.use('/api/payroll', payrollRouter);
+  app.use('/api/documents', documentRouter);
+  app.use('/api/announcements', announcementRouter);
+  app.use('/api/notifications', notificationRouter);
+  app.use('/api/search', searchRouter);
   app.use('/api/uploads', uploadRouter);
 
   app.use(notFoundHandler);

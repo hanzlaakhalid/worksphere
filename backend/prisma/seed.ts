@@ -1,12 +1,14 @@
 import {
   ApplicationStatus,
   AttendanceStatus,
+  DocumentCategory,
   EmployeeStatus,
   EmploymentType,
   Gender,
   JobStatus,
   LeaveStatus,
   LeaveType,
+  NotificationType,
   PaymentStatus,
   PerformanceRating,
   PrismaClient,
@@ -14,12 +16,28 @@ import {
 } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import bcrypt from 'bcryptjs';
+import fs from 'node:fs';
+import path from 'node:path';
 import 'dotenv/config';
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter });
 
 const DEV_PASSWORD = 'Password123!';
+
+// Documents point at real (placeholder) files under uploads/ so "view/download"
+// works out of the box instead of a dead link.
+const UPLOADS_DIR = path.join(__dirname, '../uploads');
+if (!fs.existsSync(UPLOADS_DIR)) {
+  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+}
+function ensureSeedFile(filename: string, content: string): string {
+  const filePath = path.join(UPLOADS_DIR, filename);
+  if (!fs.existsSync(filePath)) {
+    fs.writeFileSync(filePath, content);
+  }
+  return `/uploads/${filename}`;
+}
 
 interface SeedUser {
   email: string;
@@ -634,6 +652,144 @@ const seedApplications: SeedApplication[] = [
   },
 ];
 
+interface SeedDocument {
+  title: string;
+  category: DocumentCategory;
+  filename: string;
+  content: string;
+  employeeEmail: string | null;
+  uploadedByEmail: string;
+}
+
+const seedDocuments: SeedDocument[] = [
+  {
+    title: 'Employee Handbook 2026',
+    category: DocumentCategory.POLICY,
+    filename: 'seed-employee-handbook.txt',
+    content: 'WorkSphere Employee Handbook 2026 (seed placeholder).',
+    employeeEmail: null,
+    uploadedByEmail: 'hr1@worksphere.local',
+  },
+  {
+    title: 'Remote Work Policy',
+    category: DocumentCategory.POLICY,
+    filename: 'seed-remote-work-policy.txt',
+    content: 'WorkSphere Remote Work Policy (seed placeholder).',
+    employeeEmail: null,
+    uploadedByEmail: 'hr1@worksphere.local',
+  },
+  {
+    title: 'Offer Letter',
+    category: DocumentCategory.CONTRACT,
+    filename: 'seed-offer-letter-sofia-costa.txt',
+    content: 'Offer letter for Sofia Costa (seed placeholder).',
+    employeeEmail: 'employee1@worksphere.local',
+    uploadedByEmail: 'hr1@worksphere.local',
+  },
+  {
+    title: 'AWS Certified Solutions Architect',
+    category: DocumentCategory.CERTIFICATE,
+    filename: 'seed-cert-ava-johansson.txt',
+    content: 'AWS Certified Solutions Architect - Associate (seed placeholder).',
+    employeeEmail: 'employee3@worksphere.local',
+    uploadedByEmail: 'employee3@worksphere.local',
+  },
+];
+
+interface SeedAnnouncement {
+  title: string;
+  content: string;
+  publishedOffset: number;
+  expiresOffset: number | null;
+  createdByEmail: string;
+}
+
+const seedAnnouncements: SeedAnnouncement[] = [
+  {
+    title: 'Q1 All-Hands scheduled for next Friday',
+    content:
+      'Join us for the Q1 all-hands meeting covering company updates, product roadmap, and team shout-outs. Calendar invite to follow.',
+    publishedOffset: -2,
+    expiresOffset: 10,
+    createdByEmail: 'hr1@worksphere.local',
+  },
+  {
+    title: 'Updated Remote Work Policy is live',
+    content:
+      'We have refreshed the remote work policy effective this month. Please review the updated Remote Work Policy document in the Documents section.',
+    publishedOffset: -5,
+    expiresOffset: null,
+    createdByEmail: 'hr1@worksphere.local',
+  },
+  {
+    title: 'Open enrollment for benefits closes soon',
+    content:
+      'A reminder that open enrollment for health and dental benefits closes at the end of this month. Reach out to HR with any questions.',
+    publishedOffset: -1,
+    expiresOffset: 20,
+    createdByEmail: 'hr2@worksphere.local',
+  },
+];
+
+interface SeedNotification {
+  userEmail: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  link: string | null;
+  isRead: boolean;
+  daysAgo: number;
+}
+
+const seedNotifications: SeedNotification[] = [
+  {
+    userEmail: 'employee1@worksphere.local',
+    type: NotificationType.REVIEW_SUBMITTED,
+    title: 'New performance review',
+    message: 'A performance review for Q1 2026 has been submitted.',
+    link: '/employee/performance',
+    isRead: false,
+    daysAgo: 1,
+  },
+  {
+    userEmail: 'employee1@worksphere.local',
+    type: NotificationType.ANNOUNCEMENT,
+    title: 'New announcement',
+    message: 'Q1 All-Hands scheduled for next Friday',
+    link: null,
+    isRead: true,
+    daysAgo: 2,
+  },
+  {
+    userEmail: 'employee7@worksphere.local',
+    type: NotificationType.LEAVE_APPROVED,
+    title: 'Leave request approved',
+    message: 'Your sick leave request has been approved.',
+    link: '/employee/leave',
+    isRead: false,
+    daysAgo: 1,
+  },
+  {
+    userEmail: 'employee5@worksphere.local',
+    type: NotificationType.LEAVE_REJECTED,
+    title: 'Leave request rejected',
+    message:
+      'Your casual leave request was rejected: Team was short-staffed that week during a customer launch; please propose different dates.',
+    link: '/employee/leave',
+    isRead: true,
+    daysAgo: 10,
+  },
+  {
+    userEmail: 'hr1@worksphere.local',
+    type: NotificationType.ANNOUNCEMENT,
+    title: 'New announcement',
+    message: 'Open enrollment for benefits closes soon',
+    link: null,
+    isRead: false,
+    daysAgo: 1,
+  },
+];
+
 async function main() {
   const passwordHash = await bcrypt.hash(DEV_PASSWORD, 10);
 
@@ -946,6 +1102,68 @@ async function main() {
     }
   }
   console.log(`Seeded ${payrollCount} payroll records.`);
+
+  // Documents: company-wide policies plus a couple of employee-specific files.
+  let documentCount = 0;
+  for (const doc of seedDocuments) {
+    const employeeId = doc.employeeEmail ? employeeIdByEmail.get(doc.employeeEmail)! : null;
+    const uploadedById = employeeIdByEmail.get(doc.uploadedByEmail)!;
+
+    const existing = await prisma.document.findFirst({ where: { title: doc.title, employeeId } });
+    if (existing) continue;
+
+    const fileUrl = ensureSeedFile(doc.filename, doc.content);
+    await prisma.document.create({
+      data: { title: doc.title, category: doc.category, fileUrl, employeeId, uploadedById },
+    });
+    documentCount += 1;
+  }
+  console.log(`Seeded ${documentCount} documents.`);
+
+  // Announcements: a small feed so dashboards aren't empty on first login.
+  const announcementIdByTitle = new Map<string, string>();
+  let announcementCount = 0;
+  for (const announcement of seedAnnouncements) {
+    const createdById = employeeIdByEmail.get(announcement.createdByEmail)!;
+    const publishedAt = daysFromToday(announcement.publishedOffset);
+    const expiresAt = announcement.expiresOffset !== null ? daysFromToday(announcement.expiresOffset) : null;
+
+    let existing = await prisma.announcement.findFirst({ where: { title: announcement.title } });
+    if (!existing) {
+      existing = await prisma.announcement.create({
+        data: { title: announcement.title, content: announcement.content, publishedAt, expiresAt, createdById },
+      });
+      announcementCount += 1;
+    }
+    announcementIdByTitle.set(announcement.title, existing.id);
+  }
+  console.log(`Seeded ${announcementCount} announcements.`);
+
+  // Notifications: a few pre-populated so the bell/panel has demo content immediately.
+  let notificationCount = 0;
+  for (const notification of seedNotifications) {
+    const userId = userIdByEmail.get(notification.userEmail)!;
+    const createdAt = withTime(daysFromToday(-notification.daysAgo), 9, 0);
+
+    const existing = await prisma.notification.findFirst({
+      where: { userId, title: notification.title, message: notification.message },
+    });
+    if (existing) continue;
+
+    await prisma.notification.create({
+      data: {
+        userId,
+        type: notification.type,
+        title: notification.title,
+        message: notification.message,
+        link: notification.link,
+        isRead: notification.isRead,
+        createdAt,
+      },
+    });
+    notificationCount += 1;
+  }
+  console.log(`Seeded ${notificationCount} notifications.`);
 }
 
 function hashCode(value: string): number {

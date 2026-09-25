@@ -82,6 +82,22 @@ enum PaymentStatus {
   PAID
 }
 
+enum DocumentCategory {
+  POLICY
+  CONTRACT
+  CERTIFICATE
+  ID_PROOF
+  OTHER
+}
+
+enum NotificationType {
+  LEAVE_APPROVED
+  LEAVE_REJECTED
+  REVIEW_SUBMITTED
+  ANNOUNCEMENT
+  DOCUMENT_UPLOADED
+}
+
 model User {
   id           String    @id @default(cuid())
   email        String    @unique
@@ -93,6 +109,7 @@ model User {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   employee     Employee?
+  notifications Notification[]
 
   @@index([role])
 }
@@ -141,6 +158,9 @@ model Employee {
   jobsPosted            Job[]               @relation("JobPostedBy")
   interviewsConducted   Interview[]         @relation("Interviewer")
   payrollRecords        Payroll[]
+  documents             Document[]          @relation("EmployeeDocuments")
+  documentsUploaded     Document[]          @relation("DocumentUploadedBy")
+  announcementsPosted   Announcement[]
 
   @@index([departmentId])
   @@index([managerId])
@@ -287,4 +307,48 @@ model LeaveRequest {
 
   @@index([employeeId])
   @@index([status])
+}
+
+model Document {
+  id           String           @id @default(cuid())
+  title        String
+  category     DocumentCategory @default(OTHER)
+  fileUrl      String
+  employeeId   String?
+  employee     Employee?        @relation("EmployeeDocuments", fields: [employeeId], references: [id], onDelete: Cascade)
+  uploadedById String
+  uploadedBy   Employee         @relation("DocumentUploadedBy", fields: [uploadedById], references: [id], onDelete: Cascade)
+  createdAt    DateTime         @default(now())
+
+  @@index([employeeId])
+  @@index([category])
+}
+
+model Announcement {
+  id          String    @id @default(cuid())
+  title       String
+  content     String
+  publishedAt DateTime  @default(now())
+  expiresAt   DateTime?
+  createdById String
+  createdBy   Employee  @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([publishedAt])
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  title     String
+  message   String
+  link      String?
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  @@index([userId])
+  @@index([userId, isRead])
 }
