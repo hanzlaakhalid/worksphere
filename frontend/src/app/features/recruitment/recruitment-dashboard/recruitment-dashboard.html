@@ -1,0 +1,32 @@
+<div class="page">
+  <header class="page-header">
+    <h1>Recruitment</h1>
+    <p>Hiring pipeline overview across open roles and applicants.</p>
+  </header>
+
+  @if (error()) {
+    <div class="list-error" role="alert">{{ error() }}</div>
+  }
+
+  <div class="stat-cards">
+    <app-dashboard-card
+      icon="work"
+      title="Open Jobs"
+      [value]="loading() ? undefined : (stats()?.openJobs ?? 0).toString()"
+      routerLink="/hr/recruitment/jobs"
+    />
+    <app-dashboard-card
+      icon="groups"
+      title="Total Applicants"
+      [value]="loading() ? undefined : (stats()?.totalApplicants ?? 0).toString()"
+      routerLink="/hr/recruitment/applications"
+    />
+  </div>
+
+  @if (!loading() && hasApplications()) {
+    <div class="chart-card">
+      <h3>Applications by status</h3>
+      <canvas baseChart [data]="chartData()" [options]="chartOptions" type="doughnut"></canvas>
+    </div>
+  }
+</div>

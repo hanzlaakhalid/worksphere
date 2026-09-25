@@ -1,0 +1,113 @@
+<div class="page">
+  <header class="page-header">
+    <h1>{{ mode === 'manage' ? 'Payroll Management' : 'My Payslips' }}</h1>
+    @if (mode === 'manage') {
+      <button mat-flat-button color="primary" (click)="openAddDialog()">
+        <mat-icon>add</mat-icon>
+        Add Payroll Record
+      </button>
+    }
+  </header>
+
+  @if (mode === 'manage') {
+    <div class="filters">
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Employee</mat-label>
+        <mat-select [value]="employeeFilter()" (selectionChange)="onEmployeeFilterChange($event.value)">
+          <mat-option [value]="null">All employees</mat-option>
+          @for (emp of employeeOptions(); track emp.id) {
+            <mat-option [value]="emp.id">{{ emp.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Payment status</mat-label>
+        <mat-select [value]="paymentStatusFilter()" (selectionChange)="onPaymentStatusFilterChange($event.value)">
+          <mat-option [value]="null">All statuses</mat-option>
+          @for (status of paymentStatusOptions; track status) {
+            <mat-option [value]="status">{{ status }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+  }
+
+  @if (error()) {
+    <div class="list-error" role="alert">{{ error() }}</div>
+  }
+
+  <app-data-table
+    [loading]="loading()"
+    [empty]="!loading() && records().length === 0"
+    emptyIcon="payments"
+    emptyTitle="No payroll records found"
+    [emptyDescription]="mode === 'manage' ? 'Use Add Payroll Record to create one.' : 'Your payslips will appear here once HR generates them.'"
+  >
+    <table mat-table [dataSource]="records()" class="payroll-table">
+      <ng-container matColumnDef="employee">
+        <th mat-header-cell *matHeaderCellDef>Employee</th>
+        <td mat-cell *matCellDef="let rec">{{ rec.employee.firstName }} {{ rec.employee.lastName }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="month">
+        <th mat-header-cell *matHeaderCellDef>Month</th>
+        <td mat-cell *matCellDef="let rec">{{ rec.month | date: 'MMMM yyyy' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="basicSalary">
+        <th mat-header-cell *matHeaderCellDef>Basic Salary</th>
+        <td mat-cell *matCellDef="let rec">{{ rec.basicSalary | salaryFormat }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="allowances">
+        <th mat-header-cell *matHeaderCellDef>Allowances</th>
+        <td mat-cell *matCellDef="let rec">{{ rec.allowances | salaryFormat }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="bonuses">
+        <th mat-header-cell *matHeaderCellDef>Bonuses</th>
+        <td mat-cell *matCellDef="let rec">{{ rec.bonuses | salaryFormat }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="deductions">
+        <th mat-header-cell *matHeaderCellDef>Deductions</th>
+        <td mat-cell *matCellDef="let rec">{{ rec.deductions | salaryFormat }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="tax">
+        <th mat-header-cell *matHeaderCellDef>Tax</th>
+        <td mat-cell *matCellDef="let rec">{{ rec.tax | salaryFormat }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="netSalary">
+        <th mat-header-cell *matHeaderCellDef>Net Salary</th>
+        <td mat-cell *matCellDef="let rec"><strong>{{ rec.netSalary | salaryFormat }}</strong></td>
+      </ng-container>
+
+      <ng-container matColumnDef="paymentStatus">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let rec">
+          <app-status-badge [label]="rec.paymentStatus" [variant]="paymentStatusVariant(rec.paymentStatus)" />
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let rec">
+          <button mat-icon-button (click)="openEditDialog(rec)" aria-label="Edit payroll record">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="deleteRecord(rec, $event)" aria-label="Delete payroll record">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  </app-data-table>
+
+  <app-pagination [total]="total()" [page]="page()" [pageSize]="pageSize()" (pageChange)="onPageChange($event)" />
+</div>

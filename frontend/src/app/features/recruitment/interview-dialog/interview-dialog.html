@@ -1,0 +1,43 @@
+<app-modal title="Schedule Interview">
+  <form [formGroup]="form" (ngSubmit)="submit()" class="interview-form">
+    @if (error()) {
+      <div class="form-error" role="alert">{{ error() }}</div>
+    }
+
+    <mat-form-field appearance="outline">
+      <mat-label>Date</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="scheduledAt" />
+      <mat-datepicker-toggle matSuffix [for]="picker" />
+      <mat-datepicker #picker />
+      @if (form.controls.scheduledAt.hasError('required') && form.controls.scheduledAt.touched) {
+        <mat-error>Date is required</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Interviewer</mat-label>
+      <mat-select formControlName="interviewerId">
+        <mat-option [value]="null">Unassigned</mat-option>
+        @for (emp of data.employeeOptions; track emp.id) {
+          <mat-option [value]="emp.id">{{ emp.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Notes</mat-label>
+      <textarea matInput formControlName="notes" rows="3"></textarea>
+    </mat-form-field>
+  </form>
+
+  <div modalActions>
+    <button mat-button type="button" mat-dialog-close>Cancel</button>
+    <button mat-flat-button color="primary" type="button" [disabled]="saving()" (click)="submit()">
+      @if (saving()) {
+        <mat-spinner diameter="20" />
+      } @else {
+        Schedule
+      }
+    </button>
+  </div>
+</app-modal>

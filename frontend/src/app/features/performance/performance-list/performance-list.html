@@ -1,0 +1,78 @@
+<div class="page">
+  <header class="page-header">
+    <h1>{{ mode === 'team' ? 'Team Performance Reviews' : 'My Performance' }}</h1>
+    @if (mode === 'team') {
+      <button mat-flat-button color="primary" (click)="openNewReviewDialog()">
+        <mat-icon>rate_review</mat-icon>
+        New Review
+      </button>
+    }
+  </header>
+
+  @if (error()) {
+    <div class="list-error" role="alert">{{ error() }}</div>
+  }
+
+  @if (mode === 'self' && !loading() && reviews().length > 0) {
+    <div class="chart-card">
+      <h3>Rating trend</h3>
+      <canvas baseChart [data]="chartData()" [options]="chartOptions" type="bar"></canvas>
+    </div>
+  }
+
+  <app-data-table
+    [loading]="loading()"
+    [empty]="!loading() && reviews().length === 0"
+    emptyIcon="rate_review"
+    [emptyTitle]="mode === 'team' ? 'No reviews written yet' : 'No reviews yet'"
+    [emptyDescription]="mode === 'team' ? 'Use New Review to write one for a team member.' : 'Your manager hasn\'t submitted a review yet.'"
+  >
+    <table mat-table [dataSource]="reviews()" multiTemplateDataRows class="performance-table">
+      <ng-container matColumnDef="employee">
+        <th mat-header-cell *matHeaderCellDef>Employee</th>
+        <td mat-cell *matCellDef="let r">{{ r.employee.firstName }} {{ r.employee.lastName }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="reviewPeriod">
+        <th mat-header-cell *matHeaderCellDef>Review Period</th>
+        <td mat-cell *matCellDef="let r">{{ r.reviewPeriod }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="overallRating">
+        <th mat-header-cell *matHeaderCellDef>Overall Rating</th>
+        <td mat-cell *matCellDef="let r">{{ ratingLabel(r.overallRating) }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="createdAt">
+        <th mat-header-cell *matHeaderCellDef>Submitted</th>
+        <td mat-cell *matCellDef="let r">{{ r.createdAt | date: 'mediumDate' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="expandedDetail">
+        <td mat-cell *matCellDef="let r" [attr.colspan]="displayedColumns.length" class="detail-cell">
+          <div class="detail-grid">
+            <div class="detail-field"><span class="label">Goals</span><span>{{ r.goals }}</span></div>
+            <div class="detail-field"><span class="label">Achievements</span><span>{{ r.achievements }}</span></div>
+            <div class="detail-field"><span class="label">Strengths</span><span>{{ r.strengths }}</span></div>
+            <div class="detail-field">
+              <span class="label">Areas for improvement</span><span>{{ r.areasForImprovement }}</span>
+            </div>
+            <div class="detail-field full-width">
+              <span class="label">Manager comments</span><span>{{ r.managerComments }}</span>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr
+        mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        class="review-row"
+        [class.expanded]="expandedId() === row.id"
+        (click)="toggle(row.id)"
+      ></tr>
+      <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" [hidden]="expandedId() !== row.id" class="detail-row"></tr>
+    </table>
+  </app-data-table>
+</div>

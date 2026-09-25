@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { roleGuard } from './core/guards/role-guard';
 import { roleHomeRedirect } from './core/guards/role-home-redirect';
 
@@ -12,6 +13,15 @@ const departmentList = () =>
 const attendanceList = () =>
   import('./features/attendance/attendance-list/attendance-list').then((m) => m.AttendanceList);
 const leaveList = () => import('./features/leave/leave-list/leave-list').then((m) => m.LeaveList);
+const performanceList = () =>
+  import('./features/performance/performance-list/performance-list').then((m) => m.PerformanceList);
+const recruitmentDashboard = () =>
+  import('./features/recruitment/recruitment-dashboard/recruitment-dashboard').then((m) => m.RecruitmentDashboard);
+const jobList = () => import('./features/recruitment/job-list/job-list').then((m) => m.JobList);
+const applicationList = () =>
+  import('./features/recruitment/application-list/application-list').then((m) => m.ApplicationList);
+const payrollList = () => import('./features/payroll/payroll-list/payroll-list').then((m) => m.PayrollList);
+const chartProviders = [provideCharts(withDefaultRegisterables())];
 
 /** Employee CRUD routes reused across role prefixes with a role-appropriate basePath/canManage. */
 function employeeRoutes(basePath: string, canManage: boolean) {
@@ -70,8 +80,15 @@ export const routes: Routes = [
       { path: 'departments', loadComponent: departmentList },
       { path: 'attendance', data: { scope: 'scoped' }, loadComponent: attendanceList },
       { path: 'leave', data: { mode: 'review' }, loadComponent: leaveList },
-      { path: 'recruitment', data: { title: 'Recruitment' }, loadComponent: comingSoon },
-      { path: 'payroll', data: { title: 'Payroll' }, loadComponent: comingSoon },
+      {
+        path: 'recruitment',
+        children: [
+          { path: '', providers: chartProviders, loadComponent: recruitmentDashboard },
+          { path: 'jobs', loadComponent: jobList },
+          { path: 'applications', loadComponent: applicationList },
+        ],
+      },
+      { path: 'payroll', data: { mode: 'manage' }, loadComponent: payrollList },
     ],
   },
   {
@@ -88,7 +105,8 @@ export const routes: Routes = [
       { path: 'team', children: employeeRoutes('/manager/team', false) },
       { path: 'attendance', data: { scope: 'scoped' }, loadComponent: attendanceList },
       { path: 'leave', data: { mode: 'review' }, loadComponent: leaveList },
-      { path: 'performance', data: { title: 'Performance' }, loadComponent: comingSoon },
+      { path: 'performance', data: { mode: 'team' }, providers: chartProviders, loadComponent: performanceList },
+      { path: 'payroll', data: { mode: 'self' }, loadComponent: payrollList },
     ],
   },
   {
@@ -105,7 +123,8 @@ export const routes: Routes = [
       { path: 'profile', data: { title: 'Profile' }, loadComponent: comingSoon },
       { path: 'attendance', data: { scope: 'self' }, loadComponent: attendanceList },
       { path: 'leave', data: { mode: 'self' }, loadComponent: leaveList },
-      { path: 'payroll', data: { title: 'Payroll' }, loadComponent: comingSoon },
+      { path: 'performance', data: { mode: 'self' }, providers: chartProviders, loadComponent: performanceList },
+      { path: 'payroll', data: { mode: 'self' }, loadComponent: payrollList },
     ],
   },
   { path: '**', redirectTo: roleHomeRedirect },

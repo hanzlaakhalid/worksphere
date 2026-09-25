@@ -2,6 +2,7 @@ import { BadgeVariant } from '../../shared/ui/status-badge/status-badge';
 import { EmployeeStatus } from '../models/employee.model';
 import { AttendanceStatus } from '../models/attendance.model';
 import { LeaveStatus } from '../models/leave.model';
+import { PaymentStatus } from '../models/payroll.model';
 
 export function employeeStatusVariant(status: EmployeeStatus): BadgeVariant {
   switch (status) {
@@ -42,4 +43,8 @@ export function leaveStatusVariant(status: LeaveStatus): BadgeVariant {
     default:
       return 'warning';
   }
+}
+
+export function paymentStatusVariant(status: PaymentStatus): BadgeVariant {
+  return status === 'PAID' ? 'success' : 'warning';
 }

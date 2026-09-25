@@ -1,0 +1,71 @@
+<app-modal title="New Performance Review">
+  <form [formGroup]="form" (ngSubmit)="submit()" class="review-form">
+    @if (error()) {
+      <div class="form-error" role="alert">{{ error() }}</div>
+    }
+
+    <div class="field-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Employee</mat-label>
+        <mat-select formControlName="employeeId">
+          @for (emp of data.teamOptions; track emp.id) {
+            <mat-option [value]="emp.id">{{ emp.name }}</mat-option>
+          }
+        </mat-select>
+        @if (form.controls.employeeId.hasError('required') && form.controls.employeeId.touched) {
+          <mat-error>Please select an employee</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Review period</mat-label>
+        <input matInput formControlName="reviewPeriod" placeholder="e.g. Q2 2026" />
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Overall rating</mat-label>
+      <mat-select formControlName="overallRating">
+        @for (rating of ratings; track rating) {
+          <mat-option [value]="rating">{{ rating.replace('_', ' ') }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Goals</mat-label>
+      <textarea matInput formControlName="goals" rows="2"></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Achievements</mat-label>
+      <textarea matInput formControlName="achievements" rows="2"></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Strengths</mat-label>
+      <textarea matInput formControlName="strengths" rows="2"></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Areas for improvement</mat-label>
+      <textarea matInput formControlName="areasForImprovement" rows="2"></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Manager comments</mat-label>
+      <textarea matInput formControlName="managerComments" rows="2"></textarea>
+    </mat-form-field>
+  </form>
+
+  <div modalActions>
+    <button mat-button type="button" mat-dialog-close>Cancel</button>
+    <button mat-flat-button color="primary" type="button" [disabled]="saving()" (click)="submit()">
+      @if (saving()) {
+        <mat-spinner diameter="20" />
+      } @else {
+        Submit Review
+      }
+    </button>
+  </div>
+</app-modal>

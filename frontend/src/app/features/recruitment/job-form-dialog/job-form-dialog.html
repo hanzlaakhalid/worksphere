@@ -1,0 +1,82 @@
+<app-modal [title]="isEditMode ? 'Edit Job' : 'New Job'">
+  <form [formGroup]="form" (ngSubmit)="submit()" class="job-form">
+    @if (error()) {
+      <div class="form-error" role="alert">{{ error() }}</div>
+    }
+
+    <mat-form-field appearance="outline">
+      <mat-label>Title</mat-label>
+      <input matInput formControlName="title" />
+    </mat-form-field>
+
+    <div class="field-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Department</mat-label>
+        <mat-select formControlName="departmentId">
+          <mat-option [value]="null">No department</mat-option>
+          @for (dept of data.departments; track dept.id) {
+            <mat-option [value]="dept.id">{{ dept.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Location</mat-label>
+        <input matInput formControlName="location" />
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description" rows="3"></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Requirements</mat-label>
+      <textarea matInput formControlName="requirements" rows="3"></textarea>
+    </mat-form-field>
+
+    <div class="field-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Employment type</mat-label>
+        <mat-select formControlName="employmentType">
+          @for (type of employmentTypes; track type) {
+            <mat-option [value]="type">{{ type.replace('_', ' ') }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Status</mat-label>
+        <mat-select formControlName="status">
+          @for (status of statuses; track status) {
+            <mat-option [value]="status">{{ status.replace('_', ' ') }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="field-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Salary range min (USD)</mat-label>
+        <input matInput type="number" min="0" formControlName="salaryRangeMin" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Salary range max (USD)</mat-label>
+        <input matInput type="number" min="0" formControlName="salaryRangeMax" />
+      </mat-form-field>
+    </div>
+  </form>
+
+  <div modalActions>
+    <button mat-button type="button" mat-dialog-close>Cancel</button>
+    <button mat-flat-button color="primary" type="button" [disabled]="saving()" (click)="submit()">
+      @if (saving()) {
+        <mat-spinner diameter="20" />
+      } @else {
+        {{ isEditMode ? 'Save Changes' : 'Create Job' }}
+      }
+    </button>
+  </div>
+</app-modal>

@@ -1,0 +1,76 @@
+<app-modal [title]="isEditMode ? 'Edit Payroll Record' : 'New Payroll Record'">
+  <form [formGroup]="form" (ngSubmit)="submit()" class="payroll-form">
+    @if (error()) {
+      <div class="form-error" role="alert">{{ error() }}</div>
+    }
+
+    <div class="field-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Employee</mat-label>
+        <mat-select formControlName="employeeId">
+          @for (emp of data.employeeOptions; track emp.id) {
+            <mat-option [value]="emp.id">{{ emp.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Month</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="month" />
+        <mat-datepicker-toggle matSuffix [for]="picker" />
+        <mat-datepicker #picker startView="multi-year" />
+      </mat-form-field>
+    </div>
+
+    <div class="field-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Basic salary (USD)</mat-label>
+        <input matInput type="number" min="0" formControlName="basicSalary" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Allowances (USD)</mat-label>
+        <input matInput type="number" min="0" formControlName="allowances" />
+      </mat-form-field>
+    </div>
+
+    <div class="field-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Bonuses (USD)</mat-label>
+        <input matInput type="number" min="0" formControlName="bonuses" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Deductions (USD)</mat-label>
+        <input matInput type="number" min="0" formControlName="deductions" />
+      </mat-form-field>
+    </div>
+
+    <div class="field-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Tax (USD)</mat-label>
+        <input matInput type="number" min="0" formControlName="tax" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Payment status</mat-label>
+        <mat-select formControlName="paymentStatus">
+          @for (status of paymentStatuses; track status) {
+            <mat-option [value]="status">{{ status }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </form>
+
+  <div modalActions>
+    <button mat-button type="button" mat-dialog-close>Cancel</button>
+    <button mat-flat-button color="primary" type="button" [disabled]="saving()" (click)="submit()">
+      @if (saving()) {
+        <mat-spinner diameter="20" />
+      } @else {
+        {{ isEditMode ? 'Save Changes' : 'Create Record' }}
+      }
+    </button>
+  </div>
+</app-modal>

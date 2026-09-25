@@ -28,12 +28,14 @@ export const NAV_ITEMS_BY_ROLE: Record<Role, NavItem[]> = {
     { label: 'Attendance', icon: 'event_available', route: '/manager/attendance' },
     { label: 'Leave', icon: 'beach_access', route: '/manager/leave' },
     { label: 'Performance', icon: 'insights', route: '/manager/performance' },
+    { label: 'Payroll', icon: 'payments', route: '/manager/payroll' },
   ],
   EMPLOYEE: [
     { label: 'Dashboard', icon: 'dashboard', route: '/employee/dashboard' },
     { label: 'Profile', icon: 'person', route: '/employee/profile' },
     { label: 'Attendance', icon: 'event_available', route: '/employee/attendance' },
     { label: 'Leave', icon: 'beach_access', route: '/employee/leave' },
+    { label: 'Performance', icon: 'insights', route: '/employee/performance' },
     { label: 'Payroll', icon: 'payments', route: '/employee/payroll' },
   ],
 };

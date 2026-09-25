@@ -1,0 +1,108 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  h1 {
+    margin: 0;
+    font-size: 1.5rem;
+  }
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.filter-field {
+  min-width: 220px;
+}
+
+.list-error {
+  background: color-mix(in srgb, var(--mat-sys-error) 12%, transparent);
+  color: var(--mat-sys-error);
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 0.875rem;
+}
+
+.application-table {
+  width: 100%;
+}
+
+.applicant-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  .name {
+    font-weight: 500;
+  }
+
+  .email {
+    font-size: 0.8rem;
+    opacity: 0.65;
+  }
+}
+
+.status-select {
+  width: 160px;
+
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+}
+
+.application-row {
+  cursor: pointer;
+
+  &:hover {
+    background: var(--mat-sys-surface-container-highest);
+  }
+}
+
+.detail-row {
+  height: 0;
+}
+
+.detail-cell {
+  border-bottom: none;
+  padding: 0 16px 16px !important;
+}
+
+.no-interviews {
+  margin: 0;
+  padding: 12px;
+  font-size: 0.875rem;
+  opacity: 0.65;
+}
+
+.interview-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: var(--mat-sys-surface-container-low);
+  border-radius: 8px;
+}
+
+.interview-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.875rem;
+
+  .notes {
+    opacity: 0.65;
+    margin-top: 2px;
+  }
+}
