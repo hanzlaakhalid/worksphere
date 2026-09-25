@@ -9,6 +9,10 @@ import { departmentRouter } from './routes/department.routes';
 import { employeeRouter } from './routes/employee.routes';
 import { attendanceRouter } from './routes/attendance.routes';
 import { leaveRouter } from './routes/leave.routes';
+import { performanceRouter } from './routes/performance.routes';
+import { jobRouter } from './routes/job.routes';
+import { applicationRouter } from './routes/application.routes';
+import { payrollRouter } from './routes/payroll.routes';
 import { uploadRouter } from './routes/upload.routes';
 import { UPLOADS_DIR } from './middleware/upload';
 import { notFoundHandler, errorHandler } from './middleware/errorHandler';
@@ -41,6 +45,10 @@ export function createApp() {
   app.use('/api/employees', employeeRouter);
   app.use('/api/attendance', attendanceRouter);
   app.use('/api/leaves', leaveRouter);
+  app.use('/api/performance', performanceRouter);
+  app.use('/api/jobs', jobRouter);
+  app.use('/api/applications', applicationRouter);
+  app.use('/api/payroll', payrollRouter);
   app.use('/api/uploads', uploadRouter);
 
   app.use(notFoundHandler);

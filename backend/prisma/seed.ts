@@ -1,10 +1,14 @@
 import {
+  ApplicationStatus,
   AttendanceStatus,
   EmployeeStatus,
   EmploymentType,
   Gender,
+  JobStatus,
   LeaveStatus,
   LeaveType,
+  PaymentStatus,
+  PerformanceRating,
   PrismaClient,
   Role,
 } from '@prisma/client';
@@ -407,6 +411,229 @@ const seedLeaves: SeedLeave[] = [
   },
 ];
 
+interface SeedPerformanceReview {
+  employeeEmail: string;
+  reviewerEmail: string;
+  reviewPeriod: string;
+  overallRating: PerformanceRating;
+  goals: string;
+  achievements: string;
+  strengths: string;
+  areasForImprovement: string;
+  managerComments: string;
+}
+
+const seedPerformanceReviews: SeedPerformanceReview[] = [
+  {
+    employeeEmail: 'employee1@worksphere.local',
+    reviewerEmail: 'manager1@worksphere.local',
+    reviewPeriod: 'Q1 2026',
+    overallRating: PerformanceRating.EXCEEDS_EXPECTATIONS,
+    goals: 'Ship the new onboarding flow and mentor one junior engineer.',
+    achievements: 'Delivered the onboarding flow two weeks ahead of schedule and onboarded a new hire.',
+    strengths: 'Strong ownership, clear communication with design and product.',
+    areasForImprovement: 'Could delegate more of the code-review load to reduce bottlenecks.',
+    managerComments: 'Sofia had a standout quarter. Recommending for the senior track next cycle.',
+  },
+  {
+    employeeEmail: 'employee2@worksphere.local',
+    reviewerEmail: 'manager1@worksphere.local',
+    reviewPeriod: 'Q1 2026',
+    overallRating: PerformanceRating.MEETS_EXPECTATIONS,
+    goals: 'Improve test coverage on the billing service and close 15 sprint tickets.',
+    achievements: 'Closed 14 sprint tickets and raised billing service coverage from 40% to 65%.',
+    strengths: 'Reliable, thorough in code review, good bug triage instincts.',
+    areasForImprovement: 'Estimation accuracy on larger tasks needs work.',
+    managerComments: 'Solid, consistent quarter. Focus on breaking down large tasks earlier.',
+  },
+  {
+    employeeEmail: 'employee3@worksphere.local',
+    reviewerEmail: 'manager1@worksphere.local',
+    reviewPeriod: 'Q1 2026',
+    overallRating: PerformanceRating.OUTSTANDING,
+    goals: 'Lead the migration to the new deployment pipeline.',
+    achievements: 'Migrated all services with zero downtime and wrote the runbook the team now uses.',
+    strengths: 'Deep technical expertise, calm under pressure, excellent documentation.',
+    areasForImprovement: 'Could share more context earlier when plans change.',
+    managerComments: 'Exceptional quarter - this is exactly the kind of ownership we want to see more of.',
+  },
+  {
+    employeeEmail: 'employee4@worksphere.local',
+    reviewerEmail: 'manager2@worksphere.local',
+    reviewPeriod: 'Q1 2026',
+    overallRating: PerformanceRating.MEETS_EXPECTATIONS,
+    goals: 'Hit $120k in closed pipeline and improve discovery call notes.',
+    achievements: 'Closed $115k in new business and adopted the new call-notes template team-wide.',
+    strengths: 'Great rapport with prospects, persistent follow-up.',
+    areasForImprovement: 'Needs to qualify leads earlier to avoid late-stage drop-off.',
+    managerComments: 'Just under target but trending the right way. Keep tightening qualification.',
+  },
+  {
+    employeeEmail: 'employee5@worksphere.local',
+    reviewerEmail: 'manager2@worksphere.local',
+    reviewPeriod: 'Q1 2026',
+    overallRating: PerformanceRating.NEEDS_IMPROVEMENT,
+    goals: 'Reduce account churn in the mid-market book below 5%.',
+    achievements: 'Retained two at-risk accounts through proactive check-ins.',
+    strengths: 'Genuine relationship builder, well-liked by customers.',
+    areasForImprovement: 'Churn is still at 9%; needs a more consistent renewal-risk process.',
+    managerComments:
+      'We need to see the renewal playbook actually used every cycle, not just when an account is already at risk.',
+  },
+];
+
+interface SeedJob {
+  title: string;
+  department: string | null;
+  description: string;
+  requirements: string;
+  location: string;
+  employmentType: EmploymentType;
+  salaryRangeMin: number | null;
+  salaryRangeMax: number | null;
+  status: JobStatus;
+  postedByEmail: string | null;
+}
+
+const seedJobs: SeedJob[] = [
+  {
+    title: 'Senior Backend Engineer',
+    department: 'Engineering',
+    description: 'Own the core API platform and mentor the rest of the backend team.',
+    requirements: '5+ years backend experience, strong TypeScript/Node.js, PostgreSQL.',
+    location: 'Austin, TX (Hybrid)',
+    employmentType: EmploymentType.FULL_TIME,
+    salaryRangeMin: 120000,
+    salaryRangeMax: 150000,
+    status: JobStatus.OPEN,
+    postedByEmail: 'manager1@worksphere.local',
+  },
+  {
+    title: 'Sales Development Representative',
+    department: 'Sales',
+    description: 'Generate and qualify new pipeline for the enterprise sales team.',
+    requirements: '1-2 years SDR/BDR experience, excellent written communication.',
+    location: 'Chicago, IL',
+    employmentType: EmploymentType.FULL_TIME,
+    salaryRangeMin: 55000,
+    salaryRangeMax: 70000,
+    status: JobStatus.OPEN,
+    postedByEmail: 'manager2@worksphere.local',
+  },
+  {
+    title: 'HR Generalist',
+    department: 'Human Resources',
+    description: 'Support onboarding, benefits administration, and employee relations.',
+    requirements: '2+ years HR generalist experience, HRIS familiarity.',
+    location: 'Denver, CO',
+    employmentType: EmploymentType.FULL_TIME,
+    salaryRangeMin: 58000,
+    salaryRangeMax: 72000,
+    status: JobStatus.OPEN,
+    postedByEmail: 'hr1@worksphere.local',
+  },
+  {
+    title: 'Financial Controller',
+    department: 'Finance',
+    description: 'Own monthly close, financial reporting, and audit readiness.',
+    requirements: '7+ years accounting/finance experience, CPA preferred.',
+    location: 'Seattle, WA',
+    employmentType: EmploymentType.FULL_TIME,
+    salaryRangeMin: 130000,
+    salaryRangeMax: 160000,
+    status: JobStatus.ON_HOLD,
+    postedByEmail: 'hr2@worksphere.local',
+  },
+  {
+    title: 'Marketing Coordinator',
+    department: 'Marketing',
+    description: 'Coordinate campaign execution across email, social, and events.',
+    requirements: '1+ years marketing experience, strong project management.',
+    location: 'Portland, OR (Remote)',
+    employmentType: EmploymentType.FULL_TIME,
+    salaryRangeMin: 50000,
+    salaryRangeMax: 62000,
+    status: JobStatus.CLOSED,
+    postedByEmail: 'hr1@worksphere.local',
+  },
+];
+
+interface SeedApplication {
+  jobTitle: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  status: ApplicationStatus;
+}
+
+const seedApplications: SeedApplication[] = [
+  {
+    jobTitle: 'Senior Backend Engineer',
+    firstName: 'Wei',
+    lastName: 'Zhang',
+    email: 'wei.zhang@applicant.example',
+    phone: '+1-555-0301',
+    status: ApplicationStatus.INTERVIEW,
+  },
+  {
+    jobTitle: 'Senior Backend Engineer',
+    firstName: 'Fatima',
+    lastName: 'Haidari',
+    email: 'fatima.haidari@applicant.example',
+    phone: '+1-555-0302',
+    status: ApplicationStatus.SCREENING,
+  },
+  {
+    jobTitle: 'Senior Backend Engineer',
+    firstName: 'Marcus',
+    lastName: 'Bell',
+    email: 'marcus.bell@applicant.example',
+    phone: '+1-555-0303',
+    status: ApplicationStatus.APPLIED,
+  },
+  {
+    jobTitle: 'Sales Development Representative',
+    firstName: 'Isabella',
+    lastName: 'Rossi',
+    email: 'isabella.rossi@applicant.example',
+    phone: '+1-555-0304',
+    status: ApplicationStatus.SELECTED,
+  },
+  {
+    jobTitle: 'Sales Development Representative',
+    firstName: 'Tom',
+    lastName: 'Walker',
+    email: 'tom.walker@applicant.example',
+    phone: '+1-555-0305',
+    status: ApplicationStatus.REJECTED,
+  },
+  {
+    jobTitle: 'HR Generalist',
+    firstName: 'Priya',
+    lastName: 'Nair',
+    email: 'priya.nair@applicant.example',
+    phone: '+1-555-0306',
+    status: ApplicationStatus.INTERVIEW,
+  },
+  {
+    jobTitle: 'HR Generalist',
+    firstName: 'Samuel',
+    lastName: 'Okafor',
+    email: 'samuel.okafor@applicant.example',
+    phone: '+1-555-0307',
+    status: ApplicationStatus.APPLIED,
+  },
+  {
+    jobTitle: 'Marketing Coordinator',
+    firstName: 'Elena',
+    lastName: 'Petrova',
+    email: 'elena.petrova@applicant.example',
+    phone: '+1-555-0308',
+    status: ApplicationStatus.SELECTED,
+  },
+];
+
 async function main() {
   const passwordHash = await bcrypt.hash(DEV_PASSWORD, 10);
 
@@ -580,6 +807,145 @@ async function main() {
     }
   }
   console.log(`Seeded ${leaveCount} leave requests.`);
+
+  // Performance reviews: each manager reviewing their own direct reports.
+  let reviewCount = 0;
+  for (const review of seedPerformanceReviews) {
+    const employeeId = employeeIdByEmail.get(review.employeeEmail)!;
+    const reviewerId = employeeIdByEmail.get(review.reviewerEmail)!;
+
+    const existingReview = await prisma.performanceReview.findFirst({
+      where: { employeeId, reviewerId, reviewPeriod: review.reviewPeriod },
+    });
+    if (existingReview) continue;
+
+    await prisma.performanceReview.create({
+      data: {
+        employeeId,
+        reviewerId,
+        reviewPeriod: review.reviewPeriod,
+        overallRating: review.overallRating,
+        goals: review.goals,
+        achievements: review.achievements,
+        strengths: review.strengths,
+        areasForImprovement: review.areasForImprovement,
+        managerComments: review.managerComments,
+      },
+    });
+    reviewCount += 1;
+  }
+  console.log(`Seeded ${reviewCount} performance reviews.`);
+
+  // Recruitment: jobs, applicants, applications, and interviews for the pipeline demo.
+  const jobIdByTitle = new Map<string, string>();
+  for (const job of seedJobs) {
+    let existingJob = await prisma.job.findFirst({ where: { title: job.title } });
+    if (!existingJob) {
+      existingJob = await prisma.job.create({
+        data: {
+          title: job.title,
+          departmentId: job.department ? departmentIdByName.get(job.department) : null,
+          description: job.description,
+          requirements: job.requirements,
+          location: job.location,
+          employmentType: job.employmentType,
+          salaryRangeMin: job.salaryRangeMin,
+          salaryRangeMax: job.salaryRangeMax,
+          status: job.status,
+          postedById: job.postedByEmail ? employeeIdByEmail.get(job.postedByEmail) : null,
+        },
+      });
+    }
+    jobIdByTitle.set(job.title, existingJob.id);
+  }
+  console.log(`Seeded ${jobIdByTitle.size} jobs.`);
+
+  let applicationCount = 0;
+  let interviewCount = 0;
+  for (const application of seedApplications) {
+    const jobId = jobIdByTitle.get(application.jobTitle)!;
+
+    const applicant = await prisma.applicant.upsert({
+      where: { email: application.email },
+      update: {},
+      create: {
+        firstName: application.firstName,
+        lastName: application.lastName,
+        email: application.email,
+        phone: application.phone,
+      },
+    });
+
+    const existingApplication = await prisma.application.findUnique({
+      where: { jobId_applicantId: { jobId, applicantId: applicant.id } },
+    });
+    if (existingApplication) continue;
+
+    const created = await prisma.application.create({
+      data: { jobId, applicantId: applicant.id, status: application.status },
+    });
+    applicationCount += 1;
+
+    if (application.status === ApplicationStatus.INTERVIEW || application.status === ApplicationStatus.SELECTED) {
+      const job = seedJobs.find((j) => j.title === application.jobTitle)!;
+      await prisma.interview.create({
+        data: {
+          applicationId: created.id,
+          scheduledAt: withTime(daysFromToday(-3), 14, 0),
+          interviewerId: job.postedByEmail ? employeeIdByEmail.get(job.postedByEmail) : null,
+          notes: 'Initial technical/cultural fit interview. Positive overall impression.',
+        },
+      });
+      interviewCount += 1;
+    }
+  }
+  console.log(`Seeded ${applicationCount} applications and ${interviewCount} interviews.`);
+
+  // Payroll: last two months for every employee who has a salary on file.
+  const salaryByEmail = new Map<string, number>(
+    [...departmentHeads, ...seedEmployees].map((e) => [e.email, e.salary]),
+  );
+  const payrollMonths = [
+    { offset: -1, status: PaymentStatus.PAID },
+    { offset: 0, status: PaymentStatus.PENDING },
+  ];
+  let payrollCount = 0;
+  for (const [email, employeeId] of employeeIdByEmail) {
+    const annualSalary = salaryByEmail.get(email);
+    if (!annualSalary) continue;
+
+    const basicSalary = Math.round((annualSalary / 12) * 100) / 100;
+    const allowances = Math.round(basicSalary * 0.05 * 100) / 100;
+    const bonuses = 0;
+    const deductions = Math.round(basicSalary * 0.02 * 100) / 100;
+    const tax = Math.round(basicSalary * 0.18 * 100) / 100;
+    const netSalary = Math.round((basicSalary + allowances + bonuses - deductions - tax) * 100) / 100;
+
+    for (const { offset, status } of payrollMonths) {
+      const month = new Date(Date.UTC(daysFromToday(0).getUTCFullYear(), daysFromToday(0).getUTCMonth() + offset, 1));
+
+      const existingPayroll = await prisma.payroll.findUnique({
+        where: { employeeId_month: { employeeId, month } },
+      });
+      if (existingPayroll) continue;
+
+      await prisma.payroll.create({
+        data: {
+          employeeId,
+          month,
+          basicSalary,
+          allowances,
+          bonuses,
+          deductions,
+          tax,
+          netSalary,
+          paymentStatus: status,
+        },
+      });
+      payrollCount += 1;
+    }
+  }
+  console.log(`Seeded ${payrollCount} payroll records.`);
 }
 
 function hashCode(value: string): number {
