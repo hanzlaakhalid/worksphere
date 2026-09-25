@@ -10,9 +10,51 @@
     }
   </div>
 
-  <app-empty-state
-    icon="insights"
-    title="Analytics dashboard coming soon"
-    description="Leave statistics, hiring pipeline, and payroll summaries will appear here once the dashboard API is built in Phase 8."
-  />
+  @if (error()) {
+    <div class="dashboard-error" role="alert">{{ error() }}</div>
+  }
+
+  <div class="stat-row">
+    <app-dashboard-card icon="groups" title="Total Employees" [value]="loading() ? undefined : (data()?.employeeSummary?.total ?? 0).toString()" routerLink="/hr/employees" />
+    <app-dashboard-card icon="pending_actions" title="Pending Leave" [value]="loading() ? undefined : leavePending().toString()" routerLink="/hr/leave" />
+    <app-dashboard-card icon="work" title="Open Jobs" [value]="loading() ? undefined : (data()?.hiringStats?.openJobs ?? 0).toString()" routerLink="/hr/recruitment" />
+    <app-dashboard-card icon="payments" title="Payroll This Month" [value]="loading() ? undefined : (data()?.payrollSummary?.currentMonthTotal | salaryFormat)" routerLink="/hr/payroll" />
+  </div>
+
+  <div class="widget-grid">
+    <app-dashboard-widget title="Employees by Status" [loading]="loading()" [empty]="!loading() && !employeeStatusChart()">
+      <canvas baseChart [data]="employeeStatusChart()!" [options]="doughnutOptions" type="doughnut"></canvas>
+    </app-dashboard-widget>
+
+    <app-dashboard-widget title="Employees by Department" [loading]="loading()" [empty]="!loading() && !departmentChart()">
+      <canvas baseChart [data]="departmentChart()!" [options]="barOptions" type="bar"></canvas>
+    </app-dashboard-widget>
+
+    <app-dashboard-widget title="Employee Growth (12 months)" [loading]="loading()" [empty]="!loading() && !growthChart()">
+      <canvas baseChart [data]="growthChart()!" [options]="lineOptions" type="line"></canvas>
+    </app-dashboard-widget>
+
+    <app-dashboard-widget title="Attendance Trend (14 days)" [loading]="loading()" [empty]="!loading() && !attendanceChart()">
+      <canvas baseChart [data]="attendanceChart()!" [options]="lineOptions" type="line"></canvas>
+    </app-dashboard-widget>
+
+    <app-dashboard-widget title="Leave Requests by Type" [loading]="loading()" [empty]="!loading() && !leaveTypeChart()" emptyMessage="No leave requests yet.">
+      <canvas baseChart [data]="leaveTypeChart()!" [options]="barOptions" type="bar"></canvas>
+    </app-dashboard-widget>
+
+    <app-dashboard-widget title="Payroll by Department" [loading]="loading()" [empty]="!loading() && !payrollChart()" emptyMessage="No payroll records for this month yet.">
+      <canvas baseChart [data]="payrollChart()!" [options]="barOptions" type="bar"></canvas>
+    </app-dashboard-widget>
+  </div>
+
+  <app-dashboard-widget title="Recent Announcements" [loading]="loading()" [empty]="!loading() && (data()?.announcements?.length ?? 0) === 0" emptyMessage="No announcements yet.">
+    <div class="announcement-feed">
+      @for (announcement of data()?.announcements; track announcement.id) {
+        <div class="announcement-item">
+          <span class="title">{{ announcement.title }}</span>
+          <span class="date">{{ announcement.publishedAt | date: 'mediumDate' }}</span>
+        </div>
+      }
+    </div>
+  </app-dashboard-widget>
 </div>

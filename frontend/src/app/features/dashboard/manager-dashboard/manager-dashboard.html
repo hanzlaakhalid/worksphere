@@ -10,9 +10,37 @@
     }
   </div>
 
-  <app-empty-state
-    icon="insights"
-    title="Analytics dashboard coming soon"
-    description="Team attendance, leave, and performance trends will appear here once the dashboard API is built in Phase 8."
-  />
+  @if (error()) {
+    <div class="dashboard-error" role="alert">{{ error() }}</div>
+  }
+
+  <div class="stat-row">
+    <app-dashboard-card icon="groups" title="Team Size" [value]="loading() ? undefined : teamSize().toString()" routerLink="/manager/team" />
+    <app-dashboard-card icon="pending_actions" title="Pending Leave" [value]="loading() ? undefined : leavePending().toString()" routerLink="/manager/leave" />
+  </div>
+
+  <div class="widget-grid">
+    <app-dashboard-widget title="Team by Status" [loading]="loading()" [empty]="!loading() && !teamStatusChart()">
+      <canvas baseChart [data]="teamStatusChart()!" [options]="doughnutOptions" type="doughnut"></canvas>
+    </app-dashboard-widget>
+
+    <app-dashboard-widget title="Attendance Trend (14 days)" [loading]="loading()" [empty]="!loading() && !attendanceChart()">
+      <canvas baseChart [data]="attendanceChart()!" [options]="lineOptions" type="line"></canvas>
+    </app-dashboard-widget>
+
+    <app-dashboard-widget title="Leave Requests by Type" [loading]="loading()" [empty]="!loading() && !leaveTypeChart()" emptyMessage="No leave requests yet.">
+      <canvas baseChart [data]="leaveTypeChart()!" [options]="barOptions" type="bar"></canvas>
+    </app-dashboard-widget>
+  </div>
+
+  <app-dashboard-widget title="Recent Announcements" [loading]="loading()" [empty]="!loading() && (data()?.announcements?.length ?? 0) === 0" emptyMessage="No announcements yet.">
+    <div class="announcement-feed">
+      @for (announcement of data()?.announcements; track announcement.id) {
+        <div class="announcement-item">
+          <span class="title">{{ announcement.title }}</span>
+          <span class="date">{{ announcement.publishedAt | date: 'mediumDate' }}</span>
+        </div>
+      }
+    </div>
+  </app-dashboard-widget>
 </div>

@@ -62,6 +62,7 @@ export const routes: Routes = [
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
       {
         path: 'dashboard',
+        providers: chartProviders,
         loadComponent: () => import('./features/dashboard/admin-dashboard/admin-dashboard').then((m) => m.AdminDashboard),
       },
       { path: 'employees', children: employeeRoutes('/admin/employees', true) },
@@ -79,6 +80,7 @@ export const routes: Routes = [
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
       {
         path: 'dashboard',
+        providers: chartProviders,
         loadComponent: () => import('./features/dashboard/hr-dashboard/hr-dashboard').then((m) => m.HrDashboard),
       },
       { path: 'employees', children: employeeRoutes('/hr/employees', true) },
@@ -106,6 +108,7 @@ export const routes: Routes = [
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
       {
         path: 'dashboard',
+        providers: chartProviders,
         loadComponent: () =>
           import('./features/dashboard/manager-dashboard/manager-dashboard').then((m) => m.ManagerDashboard),
       },
@@ -126,6 +129,7 @@ export const routes: Routes = [
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
       {
         path: 'dashboard',
+        providers: chartProviders,
         loadComponent: () =>
           import('./features/dashboard/employee-dashboard/employee-dashboard').then((m) => m.EmployeeDashboard),
       },

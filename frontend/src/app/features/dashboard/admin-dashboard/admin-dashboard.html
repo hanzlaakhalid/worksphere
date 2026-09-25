@@ -10,9 +10,32 @@
     }
   </div>
 
-  <app-empty-state
-    icon="insights"
-    title="Analytics dashboard coming soon"
-    description="Employee growth, attendance trends, and hiring stats will appear here once the dashboard API is built in Phase 8."
-  />
+  @if (error()) {
+    <div class="dashboard-error" role="alert">{{ error() }}</div>
+  }
+
+  <div class="widget-grid">
+    <app-dashboard-widget title="Employees by Status" [loading]="loading()" [empty]="!loading() && !employeeStatusChart()">
+      <canvas baseChart [data]="employeeStatusChart()!" [options]="doughnutOptions" type="doughnut"></canvas>
+    </app-dashboard-widget>
+
+    <app-dashboard-widget title="Employees by Department" [loading]="loading()" [empty]="!loading() && !departmentChart()">
+      <canvas baseChart [data]="departmentChart()!" [options]="barOptions" type="bar"></canvas>
+    </app-dashboard-widget>
+
+    <app-dashboard-widget title="Employee Growth (12 months)" [loading]="loading()" [empty]="!loading() && !growthChart()">
+      <canvas baseChart [data]="growthChart()!" [options]="lineOptions" type="line"></canvas>
+    </app-dashboard-widget>
+  </div>
+
+  <app-dashboard-widget title="Recent Announcements" [loading]="loading()" [empty]="!loading() && (data()?.announcements?.length ?? 0) === 0" emptyMessage="No announcements yet.">
+    <div class="announcement-feed">
+      @for (announcement of data()?.announcements; track announcement.id) {
+        <div class="announcement-item">
+          <span class="title">{{ announcement.title }}</span>
+          <span class="date">{{ announcement.publishedAt | date: 'mediumDate' }}</span>
+        </div>
+      }
+    </div>
+  </app-dashboard-widget>
 </div>

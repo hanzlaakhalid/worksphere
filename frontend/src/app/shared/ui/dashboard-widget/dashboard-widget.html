@@ -1,0 +1,14 @@
+<div class="widget">
+  <h3 class="widget-title">{{ title() }}</h3>
+
+  @if (loading()) {
+    <div class="widget-skeleton"></div>
+  } @else if (empty()) {
+    <div class="widget-empty">
+      <mat-icon>insights</mat-icon>
+      <span>{{ emptyMessage() }}</span>
+    </div>
+  } @else {
+    <ng-content />
+  }
+</div>

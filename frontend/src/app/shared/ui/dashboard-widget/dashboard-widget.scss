@@ -1,0 +1,36 @@
+.widget {
+  background: var(--mat-sys-surface-container-low);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.widget-title {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.widget-skeleton {
+  height: 180px;
+  border-radius: 6px;
+  background: var(--mat-sys-surface-container-highest);
+  opacity: 0.6;
+}
+
+.widget-empty {
+  height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  opacity: 0.55;
+  font-size: 0.85rem;
+
+  mat-icon {
+    opacity: 0.7;
+  }
+}
