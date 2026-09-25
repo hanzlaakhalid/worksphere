@@ -15,6 +15,14 @@ import { NAV_ITEMS_BY_ROLE } from '../../core/config/nav-items.config';
 import { HasRole } from '../../shared/directives/has-role';
 import { GlobalSearch } from '../../shared/global-search/global-search';
 import { NotificationBell } from '../../shared/notifications/notification-bell/notification-bell';
+import { Role } from '../../core/models/user.model';
+
+const ROLE_LABELS: Record<Role, string> = {
+  ADMIN: 'Administrator',
+  HR_MANAGER: 'HR Manager',
+  MANAGER: 'Manager',
+  EMPLOYEE: 'Employee',
+};
 
 @Component({
   imports: [
@@ -51,6 +59,11 @@ export class MainLayout {
   protected readonly userInitials = computed(() => {
     const user = this.currentUser();
     return user ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase() : '';
+  });
+
+  protected readonly roleLabel = computed(() => {
+    const r = this.role();
+    return r ? ROLE_LABELS[r] : '';
   });
 
   protected readonly isHandset = toSignal(
