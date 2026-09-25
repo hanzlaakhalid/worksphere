@@ -10,7 +10,9 @@ export function errorHandler(err: unknown, _req: Request, res: Response, _next: 
   const status = err instanceof ApiError ? err.status : 500;
   const message = err instanceof Error ? err.message : 'Internal server error';
 
-  if (env.NODE_ENV === 'development') {
+  // Always log server-side (this is what ops/on-call would need for a real
+  // 500), independent of what we're willing to expose to the client below.
+  if (env.NODE_ENV !== 'test') {
     console.error(err);
   }
 

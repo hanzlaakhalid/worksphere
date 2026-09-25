@@ -270,6 +270,7 @@ model Payroll {
   @@unique([employeeId, month])
   @@index([employeeId])
   @@index([paymentStatus])
+  @@index([month])
 }
 
 model Attendance {
