@@ -17,6 +17,7 @@ import { documentRouter } from './routes/document.routes';
 import { announcementRouter } from './routes/announcement.routes';
 import { notificationRouter } from './routes/notification.routes';
 import { searchRouter } from './routes/search.routes';
+import { dashboardRouter } from './routes/dashboard.routes';
 import { uploadRouter } from './routes/upload.routes';
 import { UPLOADS_DIR } from './middleware/upload';
 import { notFoundHandler, errorHandler } from './middleware/errorHandler';
@@ -57,6 +58,7 @@ export function createApp() {
   app.use('/api/announcements', announcementRouter);
   app.use('/api/notifications', notificationRouter);
   app.use('/api/search', searchRouter);
+  app.use('/api/dashboard', dashboardRouter);
   app.use('/api/uploads', uploadRouter);
 
   app.use(notFoundHandler);

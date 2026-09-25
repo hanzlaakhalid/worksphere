@@ -106,7 +106,7 @@ const departmentHeads: {
     gender: Gender.FEMALE,
     dateOfBirth: '1986-01-19',
     address: '4 Redwood Ct, Austin, TX',
-    joiningDate: '2019-04-08',
+    joiningDate: monthsAgoISO(24),
     salary: 145000,
   },
   {
@@ -117,7 +117,7 @@ const departmentHeads: {
     gender: Gender.MALE,
     dateOfBirth: '1988-08-03',
     address: '22 Cypress Ave, Chicago, IL',
-    joiningDate: '2019-10-21',
+    joiningDate: monthsAgoISO(20),
     salary: 132000,
   },
   {
@@ -128,7 +128,7 @@ const departmentHeads: {
     gender: Gender.FEMALE,
     dateOfBirth: '1985-05-27',
     address: '10 Chestnut St, Denver, CO',
-    joiningDate: '2018-07-02',
+    joiningDate: monthsAgoISO(30),
     salary: 118000,
   },
   {
@@ -139,7 +139,7 @@ const departmentHeads: {
     gender: Gender.MALE,
     dateOfBirth: '1987-02-11',
     address: '55 Hickory Rd, Seattle, WA',
-    joiningDate: '2019-02-18',
+    joiningDate: monthsAgoISO(26),
     salary: 136000,
   },
 ];
@@ -154,7 +154,7 @@ const seedEmployees: SeedEmployee[] = [
     gender: Gender.FEMALE,
     dateOfBirth: '1994-03-12',
     address: '12 Birch St, Austin, TX',
-    joiningDate: '2022-06-01',
+    joiningDate: monthsAgoISO(10),
     employmentType: EmploymentType.FULL_TIME,
     salary: 98000,
     status: EmployeeStatus.ACTIVE,
@@ -168,7 +168,7 @@ const seedEmployees: SeedEmployee[] = [
     gender: Gender.MALE,
     dateOfBirth: '1996-07-22',
     address: '45 Cedar Ave, Austin, TX',
-    joiningDate: '2023-01-15',
+    joiningDate: monthsAgoISO(6),
     employmentType: EmploymentType.FULL_TIME,
     salary: 95000,
     status: EmployeeStatus.ACTIVE,
@@ -182,7 +182,7 @@ const seedEmployees: SeedEmployee[] = [
     gender: Gender.FEMALE,
     dateOfBirth: '1990-11-05',
     address: '9 Maple Dr, Austin, TX',
-    joiningDate: '2020-09-10',
+    joiningDate: monthsAgoISO(18),
     employmentType: EmploymentType.FULL_TIME,
     salary: 128000,
     status: EmployeeStatus.ACTIVE,
@@ -196,7 +196,7 @@ const seedEmployees: SeedEmployee[] = [
     gender: Gender.MALE,
     dateOfBirth: '1993-02-18',
     address: '78 Elm St, Chicago, IL',
-    joiningDate: '2022-11-01',
+    joiningDate: monthsAgoISO(8),
     employmentType: EmploymentType.FULL_TIME,
     salary: 72000,
     status: EmployeeStatus.ACTIVE,
@@ -210,7 +210,7 @@ const seedEmployees: SeedEmployee[] = [
     gender: Gender.FEMALE,
     dateOfBirth: '1995-05-30',
     address: '21 Spruce Ln, Chicago, IL',
-    joiningDate: '2023-04-03',
+    joiningDate: monthsAgoISO(5),
     employmentType: EmploymentType.FULL_TIME,
     salary: 76000,
     status: EmployeeStatus.ACTIVE,
@@ -224,7 +224,7 @@ const seedEmployees: SeedEmployee[] = [
     gender: Gender.MALE,
     dateOfBirth: '1997-09-14',
     address: '5 Willow Ct, Denver, CO',
-    joiningDate: '2023-08-21',
+    joiningDate: monthsAgoISO(4),
     employmentType: EmploymentType.FULL_TIME,
     salary: 61000,
     status: EmployeeStatus.ACTIVE,
@@ -238,7 +238,7 @@ const seedEmployees: SeedEmployee[] = [
     gender: Gender.FEMALE,
     dateOfBirth: '1992-12-01',
     address: '33 Poplar Ave, Denver, CO',
-    joiningDate: '2021-03-15',
+    joiningDate: monthsAgoISO(14),
     employmentType: EmploymentType.FULL_TIME,
     salary: 64000,
     status: EmployeeStatus.ON_LEAVE,
@@ -252,7 +252,7 @@ const seedEmployees: SeedEmployee[] = [
     gender: Gender.MALE,
     dateOfBirth: '1991-04-27',
     address: '88 Aspen Way, Seattle, WA',
-    joiningDate: '2020-01-06',
+    joiningDate: monthsAgoISO(16),
     employmentType: EmploymentType.FULL_TIME,
     salary: 82000,
     status: EmployeeStatus.INACTIVE,
@@ -266,7 +266,7 @@ const seedEmployees: SeedEmployee[] = [
     gender: Gender.FEMALE,
     dateOfBirth: '1998-06-19',
     address: '17 Magnolia St, Portland, OR',
-    joiningDate: '2024-02-12',
+    joiningDate: monthsAgoISO(3),
     employmentType: EmploymentType.PART_TIME,
     salary: 48000,
     status: EmployeeStatus.ACTIVE,
@@ -280,7 +280,7 @@ const seedEmployees: SeedEmployee[] = [
     gender: Gender.MALE,
     dateOfBirth: '1999-10-08',
     address: '60 Sycamore Blvd, Portland, OR',
-    joiningDate: '2024-09-02',
+    joiningDate: monthsAgoISO(1),
     employmentType: EmploymentType.INTERN,
     salary: 38000,
     status: EmployeeStatus.ACTIVE,
@@ -292,6 +292,13 @@ function daysFromToday(offset: number): Date {
   date.setUTCHours(0, 0, 0, 0);
   date.setUTCDate(date.getUTCDate() + offset);
   return date;
+}
+
+/** ISO date string N months before today - keeps joiningDate evergreen so the employee-growth chart has real recent data on every reseed. */
+function monthsAgoISO(months: number): string {
+  const now = new Date();
+  const date = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - months, now.getUTCDate()));
+  return date.toISOString().slice(0, 10);
 }
 
 function withTime(date: Date, hours: number, minutes: number): Date {
@@ -833,7 +840,7 @@ async function main() {
     const departmentId = departmentIdByName.get(head.department)!;
     const employee = await prisma.employee.upsert({
       where: { userId },
-      update: {},
+      update: { joiningDate: new Date(head.joiningDate) },
       create: {
         userId,
         departmentId,
@@ -860,7 +867,7 @@ async function main() {
 
     const employee = await prisma.employee.upsert({
       where: { userId },
-      update: {},
+      update: { joiningDate: new Date(seedEmployee.joiningDate) },
       create: {
         userId,
         departmentId,
