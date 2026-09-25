@@ -44,3 +44,6 @@ backend/uploads/
 
 # Docker volumes (if any local bind mounts are added later)
 .docker-data/
+
+# Local-only interview prep notes, not published
+INTERVIEW_GUIDE.md

@@ -2,7 +2,7 @@
 
 A full-stack Enterprise HR & Employee Management System built to demonstrate production-grade Angular engineering: standalone components, Signals, a deliberate mix of Signals-first and NgRx state, the classic RxJS operator set, guards/interceptors, lazy loading, and role-based access control — backed by a real Express + Prisma + PostgreSQL API, not mocked data.
 
-This project was built incrementally across 10 phases (auth → employees/departments → attendance/leave → performance/recruitment/payroll → documents/announcements/notifications/search → dashboards → hardening → deployment), with every phase verified against the real API and a real headless-browser walkthrough before moving on. See [INTERVIEW_GUIDE.md](./INTERVIEW_GUIDE.md) for a concept-by-concept breakdown tied to exact file locations, written for interview prep.
+This project was built incrementally across 10 phases (auth → employees/departments → attendance/leave → performance/recruitment/payroll → documents/announcements/notifications/search → dashboards → hardening → deployment), with every phase verified against the real API and a real headless-browser walkthrough before moving on.
 
 ## Table of contents
 
@@ -107,8 +107,7 @@ WorkSphere/
 │           ├── pipes/              # employeeStatus, salaryFormat
 │           └── validators/         # password strength/match cross-field validators
 ├── docker-compose.yml
-├── README.md
-└── INTERVIEW_GUIDE.md
+└── README.md
 ```
 
 ## Database schema
