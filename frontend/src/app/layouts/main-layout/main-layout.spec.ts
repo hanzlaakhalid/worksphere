@@ -1,8 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { of } from 'rxjs';
 import { MainLayout } from './main-layout';
 import { AuthFacade } from '../../core/state/auth/auth.facade';
 import { User } from '../../core/models/user.model';
+import { NotificationApi } from '../../core/notifications/notification-api';
+import { SearchApi } from '../../core/search/search-api';
 
 describe('MainLayout', () => {
   let component: MainLayout;
@@ -31,6 +34,8 @@ describe('MainLayout', () => {
             logout: () => undefined,
           },
         },
+        { provide: NotificationApi, useValue: { unreadCount: () => of({ data: { count: 0 } }) } },
+        { provide: SearchApi, useValue: { search: () => of({ data: { employees: [], departments: [], jobs: [], announcements: [] } }) } },
       ],
     }).compileComponents();
 
@@ -53,6 +58,8 @@ describe('MainLayout', () => {
       'Leave Management',
       'Recruitment',
       'Payroll',
+      'Documents',
+      'Announcements',
     ]);
   });
 

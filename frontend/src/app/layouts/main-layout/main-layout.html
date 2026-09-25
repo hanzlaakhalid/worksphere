@@ -34,7 +34,13 @@
         </button>
       }
 
+      @if (!isHandset()) {
+        <app-global-search />
+      }
+
       <span class="spacer"></span>
+
+      <app-notification-bell />
 
       <button mat-icon-button [matMenuTriggerFor]="userMenu" class="avatar-button" aria-label="Account menu">
         <span class="avatar">{{ userInitials() }}</span>

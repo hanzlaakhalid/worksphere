@@ -21,6 +21,9 @@ const jobList = () => import('./features/recruitment/job-list/job-list').then((m
 const applicationList = () =>
   import('./features/recruitment/application-list/application-list').then((m) => m.ApplicationList);
 const payrollList = () => import('./features/payroll/payroll-list/payroll-list').then((m) => m.PayrollList);
+const documentList = () => import('./features/documents/document-list/document-list').then((m) => m.DocumentList);
+const announcementList = () =>
+  import('./features/announcements/announcement-list/announcement-list').then((m) => m.AnnouncementList);
 const chartProviders = [provideCharts(withDefaultRegisterables())];
 
 /** Employee CRUD routes reused across role prefixes with a role-appropriate basePath/canManage. */
@@ -63,6 +66,8 @@ export const routes: Routes = [
       },
       { path: 'employees', children: employeeRoutes('/admin/employees', true) },
       { path: 'departments', loadComponent: departmentList },
+      { path: 'documents', data: { mode: 'manage' }, loadComponent: documentList },
+      { path: 'announcements', data: { mode: 'manage' }, loadComponent: announcementList },
       { path: 'reports', data: { title: 'Reports' }, loadComponent: comingSoon },
     ],
   },
@@ -89,6 +94,8 @@ export const routes: Routes = [
         ],
       },
       { path: 'payroll', data: { mode: 'manage' }, loadComponent: payrollList },
+      { path: 'documents', data: { mode: 'manage' }, loadComponent: documentList },
+      { path: 'announcements', data: { mode: 'manage' }, loadComponent: announcementList },
     ],
   },
   {
@@ -107,6 +114,8 @@ export const routes: Routes = [
       { path: 'leave', data: { mode: 'review' }, loadComponent: leaveList },
       { path: 'performance', data: { mode: 'team' }, providers: chartProviders, loadComponent: performanceList },
       { path: 'payroll', data: { mode: 'self' }, loadComponent: payrollList },
+      { path: 'documents', data: { mode: 'self' }, loadComponent: documentList },
+      { path: 'announcements', data: { mode: 'view' }, loadComponent: announcementList },
     ],
   },
   {
@@ -125,6 +134,8 @@ export const routes: Routes = [
       { path: 'leave', data: { mode: 'self' }, loadComponent: leaveList },
       { path: 'performance', data: { mode: 'self' }, providers: chartProviders, loadComponent: performanceList },
       { path: 'payroll', data: { mode: 'self' }, loadComponent: payrollList },
+      { path: 'documents', data: { mode: 'self' }, loadComponent: documentList },
+      { path: 'announcements', data: { mode: 'view' }, loadComponent: announcementList },
     ],
   },
   { path: '**', redirectTo: roleHomeRedirect },

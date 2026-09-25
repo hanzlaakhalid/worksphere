@@ -1,0 +1,67 @@
+<div class="global-search">
+  <app-search-input placeholder="Search employees, departments, jobs, announcements..." [debounceMs]="300" (searchChange)="onQueryChange($event)" />
+
+  @if (panelOpen()) {
+    <div class="results-panel">
+      @if (loading()) {
+        <div class="panel-message">Searching&hellip;</div>
+      } @else if (!hasResults()) {
+        <div class="panel-message">No results for "{{ query() }}"</div>
+      } @else {
+        @if (results().employees.length > 0) {
+          <div class="result-group">
+            <span class="group-label">Employees</span>
+            @for (item of results().employees; track item.id) {
+              <button type="button" class="result-item" (click)="goToEmployee(item)">
+                <mat-icon>person</mat-icon>
+                <span>
+                  <span class="primary">{{ item.firstName }} {{ item.lastName }}</span>
+                  <span class="secondary">{{ item.employeeCode }} &middot; {{ item.department || 'No department' }}</span>
+                </span>
+              </button>
+            }
+          </div>
+        }
+
+        @if (results().departments.length > 0) {
+          <div class="result-group">
+            <span class="group-label">Departments</span>
+            @for (item of results().departments; track item.id) {
+              <button type="button" class="result-item" (click)="goToDepartments(item)">
+                <mat-icon>apartment</mat-icon>
+                <span class="primary">{{ item.name }}</span>
+              </button>
+            }
+          </div>
+        }
+
+        @if (results().jobs.length > 0) {
+          <div class="result-group">
+            <span class="group-label">Jobs</span>
+            @for (item of results().jobs; track item.id) {
+              <button type="button" class="result-item" (click)="goToJobs(item)">
+                <mat-icon>work</mat-icon>
+                <span>
+                  <span class="primary">{{ item.title }}</span>
+                  <span class="secondary">{{ item.status }}</span>
+                </span>
+              </button>
+            }
+          </div>
+        }
+
+        @if (results().announcements.length > 0) {
+          <div class="result-group">
+            <span class="group-label">Announcements</span>
+            @for (item of results().announcements; track item.id) {
+              <button type="button" class="result-item" (click)="goToAnnouncements(item)">
+                <mat-icon>campaign</mat-icon>
+                <span class="primary">{{ item.title }}</span>
+              </button>
+            }
+          </div>
+        }
+      }
+    </div>
+  }
+</div>

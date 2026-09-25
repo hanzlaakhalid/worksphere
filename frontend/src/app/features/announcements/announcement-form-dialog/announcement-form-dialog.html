@@ -1,0 +1,44 @@
+<app-modal [title]="isEditMode ? 'Edit Announcement' : 'New Announcement'">
+  <form [formGroup]="form" (ngSubmit)="submit()" class="announcement-form">
+    @if (error()) {
+      <div class="form-error" role="alert">{{ error() }}</div>
+    }
+
+    <mat-form-field appearance="outline">
+      <mat-label>Title</mat-label>
+      <input matInput formControlName="title" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Content</mat-label>
+      <textarea matInput formControlName="content" rows="5"></textarea>
+    </mat-form-field>
+
+    <div class="field-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Publish date</mat-label>
+        <input matInput [matDatepicker]="publishPicker" formControlName="publishedAt" />
+        <mat-datepicker-toggle matSuffix [for]="publishPicker" />
+        <mat-datepicker #publishPicker />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Expires (optional)</mat-label>
+        <input matInput [matDatepicker]="expiryPicker" formControlName="expiresAt" />
+        <mat-datepicker-toggle matSuffix [for]="expiryPicker" />
+        <mat-datepicker #expiryPicker />
+      </mat-form-field>
+    </div>
+  </form>
+
+  <div modalActions>
+    <button mat-button type="button" mat-dialog-close>Cancel</button>
+    <button mat-flat-button color="primary" type="button" [disabled]="saving()" (click)="submit()">
+      @if (saving()) {
+        <mat-spinner diameter="20" />
+      } @else {
+        {{ isEditMode ? 'Save Changes' : 'Publish' }}
+      }
+    </button>
+  </div>
+</app-modal>

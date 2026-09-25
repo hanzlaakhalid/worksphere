@@ -13,6 +13,8 @@ import { MatDividerModule } from '@angular/material/divider';
 import { AuthFacade } from '../../core/state/auth/auth.facade';
 import { NAV_ITEMS_BY_ROLE } from '../../core/config/nav-items.config';
 import { HasRole } from '../../shared/directives/has-role';
+import { GlobalSearch } from '../../shared/global-search/global-search';
+import { NotificationBell } from '../../shared/notifications/notification-bell/notification-bell';
 
 @Component({
   imports: [
@@ -27,6 +29,8 @@ import { HasRole } from '../../shared/directives/has-role';
     MatMenuModule,
     MatDividerModule,
     HasRole,
+    GlobalSearch,
+    NotificationBell,
   ],
   selector: 'app-main-layout',
   styleUrl: './main-layout.scss',

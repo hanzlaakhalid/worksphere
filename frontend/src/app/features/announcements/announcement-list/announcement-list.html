@@ -1,0 +1,62 @@
+<div class="page">
+  <header class="page-header">
+    <h1>Announcements</h1>
+    @if (mode === 'manage') {
+      <button mat-flat-button color="primary" (click)="openNewDialog()">
+        <mat-icon>campaign</mat-icon>
+        New Announcement
+      </button>
+    }
+  </header>
+
+  @if (error()) {
+    <div class="list-error" role="alert">{{ error() }}</div>
+  }
+
+  @if (loading()) {
+    <div class="feed">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="skeleton-card"></div>
+      }
+    </div>
+  } @else if (announcements().length === 0) {
+    <app-empty-state
+      icon="campaign"
+      title="No announcements yet"
+      [description]="mode === 'manage' ? 'Use New Announcement to publish one.' : 'Check back later for company updates.'"
+    />
+  } @else {
+    <div class="feed">
+      @for (announcement of announcements(); track announcement.id) {
+        <mat-card class="announcement-card">
+          <mat-card-content>
+            <div class="card-header">
+              <h3>{{ announcement.title }}</h3>
+              @if (mode === 'manage') {
+                <div class="card-actions">
+                  <button mat-icon-button (click)="openEditDialog(announcement)" aria-label="Edit announcement">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button color="warn" (click)="deleteAnnouncement(announcement)" aria-label="Delete announcement">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              }
+            </div>
+            <p class="content">{{ announcement.content }}</p>
+            <div class="meta">
+              <span>{{ announcement.createdBy.firstName }} {{ announcement.createdBy.lastName }}</span>
+              <span>&middot;</span>
+              <span>{{ announcement.publishedAt | date: 'mediumDate' }}</span>
+              @if (announcement.expiresAt) {
+                <span>&middot; Expires {{ announcement.expiresAt | date: 'mediumDate' }}</span>
+              }
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  }
+
+  <app-pagination [total]="total()" [page]="page()" [pageSize]="pageSize()" (pageChange)="onPageChange($event)" />
+</div>

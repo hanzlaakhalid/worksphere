@@ -40,6 +40,15 @@
   flex: 1 1 auto;
 }
 
+app-global-search {
+  margin-left: 12px;
+}
+
+app-notification-bell {
+  display: flex;
+  margin-right: 4px;
+}
+
 .avatar-button {
   display: flex;
   align-items: center;
