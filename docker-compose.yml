@@ -32,5 +32,52 @@ services:
     profiles:
       - tools
 
+  backend:
+    build:
+      context: ./backend
+    container_name: worksphere-backend
+    restart: unless-stopped
+    environment:
+      PORT: 4000
+      NODE_ENV: production
+      # Same-origin through the frontend's nginx proxy in normal use; kept
+      # for direct-to-backend requests (e.g. hitting :4000 while debugging).
+      CORS_ORIGIN: http://localhost:8080
+      # `postgres` here is Compose's internal service DNS name on port 5432
+      # (the container's own port) - not the 5433 host mapping above, which
+      # only matters for connections made from outside this network.
+      DATABASE_URL: postgresql://worksphere:worksphere_dev_password@postgres:5432/worksphere?schema=public
+      # Dev-only default so `docker compose up` works out of the box. Any
+      # real deployment must override this with a long random secret.
+      JWT_SECRET: docker-compose-dev-only-secret-change-me
+      JWT_EXPIRES_IN: 1h
+      AUTH_RATE_LIMIT_WINDOW_MS: 900000
+      AUTH_RATE_LIMIT_MAX: 20
+    ports:
+      - "4000:4000"
+    volumes:
+      - worksphere_uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:4000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: worksphere-frontend
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+
 volumes:
   worksphere_postgres_data:
+  worksphere_uploads:
